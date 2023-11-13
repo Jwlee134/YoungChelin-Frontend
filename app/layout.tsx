@@ -17,10 +17,8 @@ export default function RootLayout({
     <html lang="ko" className="light">
       <body>
         <Providers>
-          <main className="max-w-screen-lg min-h-screen mx-auto">
-            <Header />
-            {children}
-          </main>
+          <Header />
+          {children}
         </Providers>
       </body>
     </html>
