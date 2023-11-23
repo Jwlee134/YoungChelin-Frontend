@@ -28,13 +28,13 @@ export default function EvaluationDish() {
 
   return (
     <div className="w-full h-[calc(100vh-208px)] flex flex-col">
-      <h1 className="text-xl font-bold mb-4">
+      <h1 className="text-xl font-bold">
         {isEvaluate
           ? `${handleConsonant(items[evaluationIdx].name)} 평가해주세요.`
           : `${items[evaluationIdx].name}의 사진을 올려주세요.`}
       </h1>
       {isEvaluate ? (
-        <div className="grow flex items-center justify-center">
+        <div className="grow flex items-center justify-center mt-4">
           <div
             onClick={() => handleItemClick(EvaluationItems.FLAVOR)}
             className="relative w-20 h-20 p-2 rounded-full border-2 bg-white grid place-items-center font-bold text-lg cursor-pointer"

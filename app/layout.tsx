@@ -18,7 +18,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Header />
-          {children}
+          <main className="max-w-screen-lg mx-auto pt-20">{children}</main>
         </Providers>
       </body>
     </html>

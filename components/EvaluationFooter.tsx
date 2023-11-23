@@ -67,7 +67,7 @@ export default function EvaluationFooter() {
   }
 
   return (
-    <footer className="h-20 border-t fixed bottom-0 w-full z-50 bg-white">
+    <footer className="h-20 border-t fixed bottom-0 left-0 right-0 w-full z-50 bg-white">
       <div className="max-w-screen-lg flex justify-end items-center p-5 space-x-2 mx-auto">
         {pathname !== EvaluationSteps.RESTAURANT && (
           <Button onClick={handlePrev} color="primary" variant="light">

@@ -21,7 +21,7 @@ export default function SearchBar() {
   return (
     <form
       className={cls(
-        "w-full max-w-lg",
+        "w-full max-w-lg z-50",
         pathname === "/" ? "sticky top-3 mx-auto" : ""
       )}
       onSubmit={handleSubmit(onValid)}
