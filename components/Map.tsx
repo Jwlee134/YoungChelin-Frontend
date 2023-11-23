@@ -1,37 +1,55 @@
+"use client";
+
 import { Document } from "@/app/api/keyword/route";
 import useDebounce from "@/hooks/useDebounce";
-import { Input, Listbox, ListboxItem } from "@nextui-org/react";
+import useEvaluationStore from "@/hooks/useEvaluationStore";
+import { Input, Listbox, ListboxItem, Selection } from "@nextui-org/react";
 import axios from "axios";
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
 
 declare global {
   interface Window {
     kakao: any;
   }
 }
-
-interface MapProps {
-  data: Document[] | null;
-  setData: Dispatch<SetStateAction<Document[] | null>>;
-  setSelectedId: Dispatch<SetStateAction<string>>;
-}
-
 interface MapForm {
   keyword: string;
 }
 
-export default function Map({ data, setData, setSelectedId }: MapProps) {
+export default function Map() {
+  const {
+    map,
+    setMap,
+    keyword,
+    setKeyword,
+    restaurant,
+    setRestaurant,
+    data,
+    setData,
+  } = useEvaluationStore(
+    useShallow((state) => ({
+      map: state.map,
+      setMap: state.setMap,
+      keyword: state.keyword,
+      setKeyword: state.setKeyword,
+      restaurant: state.restaurant,
+      setRestaurant: state.setRestaurant,
+      data: state.data,
+      setData: state.setData,
+    }))
+  );
   const ref = useRef<HTMLDivElement>(null);
+  const keywordRef = useRef("");
+  const initialDataRef = useRef({
+    lat: map.lat,
+    lng: map.lng,
+    level: map.level,
+    keyword,
+  });
   const mapRef = useRef<any>(null);
-  const { register, handleSubmit, watch } = useForm<MapForm>();
+  const { register, handleSubmit, watch, setValue } = useForm<MapForm>();
   const value = watch("keyword");
   const debouncedValue = useDebounce(value);
   const [, setOverlays] = useState<any[]>([]);
@@ -85,24 +103,34 @@ export default function Map({ data, setData, setSelectedId }: MapProps) {
     const onLoadKakaoAPI = () => {
       window.kakao.maps.load(() => {
         const options = {
-          center: new window.kakao.maps.LatLng(35.836348, 128.752962),
-          level: 4,
+          center: new window.kakao.maps.LatLng(
+            initialDataRef.current.lat,
+            initialDataRef.current.lng
+          ),
+          level: initialDataRef.current.level,
         };
-
-        const map = new window.kakao.maps.Map(ref.current, options);
-        mapRef.current = map;
+        const instance = new window.kakao.maps.Map(ref.current, options);
+        mapRef.current = instance;
       });
     };
     kakaoMapScript.addEventListener("load", onLoadKakaoAPI);
+    if (initialDataRef.current.keyword)
+      setValue("keyword", initialDataRef.current.keyword);
 
     return () => {
       kakaoMapScript.removeEventListener("load", onLoadKakaoAPI);
       kakaoMapScript.remove();
+      const coords = mapRef.current?.getCenter();
+      const level = mapRef.current?.getLevel();
+      if (coords?.Ma && coords?.La && level)
+        setMap({ lat: coords.Ma, lng: coords.La, level });
+      setKeyword(keywordRef.current);
     };
-  }, []);
+  }, [setMap, setKeyword, setValue]);
 
   useEffect(() => {
     if (!mapRef.current || !debouncedValue) return;
+    keywordRef.current = debouncedValue;
     getPlaces();
   }, [debouncedValue, getPlaces]);
 
@@ -112,6 +140,17 @@ export default function Map({ data, setData, setSelectedId }: MapProps) {
       resetOverlays();
     }
   }, [value, data, setData]);
+
+  function onSelectionChange(keys: Selection) {
+    const item = data?.find((item) => item.id === Array.from(keys).join(""))!;
+    setRestaurant({
+      addr: item.road_address_name,
+      id: parseInt(item.id, 10),
+      name: item.place_name,
+      x: parseFloat(item.x),
+      y: parseFloat(item.y),
+    });
+  }
 
   const emptyContent =
     !value && data === null
@@ -129,17 +168,19 @@ export default function Map({ data, setData, setSelectedId }: MapProps) {
         </form>
         <div className="h-[calc(60vh-68px)] overflow-y-auto">
           <Listbox
+            aria-label="레스토랑 목록"
             items={data || []}
-            aria-label="가게 선택"
             variant="flat"
             selectionMode="single"
-            onSelectionChange={(keys) => {
-              setSelectedId(Array.from(keys).join(""));
-            }}
+            selectedKeys={
+              restaurant.id ? new Set([restaurant.id + ""]) : undefined
+            }
+            onSelectionChange={onSelectionChange}
             emptyContent={<p className="text-sm">{emptyContent}</p>}
           >
             {(item) => (
               <ListboxItem
+                aria-label="레스토랑"
                 key={item.id}
                 description={
                   <>

@@ -1,6 +1,6 @@
 "use client";
 
-import useIsIntersecting from "@/hooks/useIsIntersecting";
+import useIsIntersecting from "@/hooks/useIntersectingStore";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";

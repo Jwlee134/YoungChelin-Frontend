@@ -13,16 +13,16 @@ import Link from "next/link";
 import LoginModal from "./modals/LoginModal";
 import SearchBar from "./SearchBar";
 import { usePathname } from "next/navigation";
-import useIsIntersecting from "@/hooks/useIsIntersecting";
+import useIntersectingStore from "@/hooks/useIntersectingStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const pathname = usePathname();
-  const isIntersecting = useIsIntersecting((state) => state.isIntersecting);
+  const isIntersecting = useIntersectingStore((state) => state.isIntersecting);
 
   return (
-    <header className="w-full h-20 bg-white/70 fixed top-0 backdrop-blur-xl">
+    <header className="w-full h-20 bg-white/70 fixed top-0 backdrop-blur-xl z-50">
       <div className="max-w-screen-lg mx-auto h-full items-center px-6 grid grid-cols-[1fr_2fr_1fr]">
         {pathname !== "/" ? (
           <Link href={"/"}>
@@ -52,7 +52,9 @@ export default function Header() {
           </div>
         )}
         <div className="justify-self-center w-full">
-          {pathname !== "/" && <SearchBar />}
+          {pathname !== "/" && !pathname.includes("evaluation") && (
+            <SearchBar />
+          )}
         </div>
         <div className="justify-self-end">
           <Dropdown>
