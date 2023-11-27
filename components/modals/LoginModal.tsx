@@ -1,15 +1,7 @@
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  Select,
-  SelectItem,
-} from "@nextui-org/react";
-import { useState } from "react";
+import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import Modal from "./Modal";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -29,7 +21,6 @@ enum Mode {
   SIGN_UP,
   AFTER_SIGN_UP,
   FIND_PW,
-  AFTER_FIND_PW,
   ISSUE_PW,
 }
 
@@ -38,8 +29,7 @@ const texts = {
   1: ["회원가입", "회원가입"],
   2: ["가입이 완료되었습니다.", "확인"],
   3: ["비밀번호 찾기", "비밀번호 찾기"],
-  4: ["비밀번호 찾기", "임시 비밀번호 발급"],
-  5: ["임시 비밀번호 발급", "확인"],
+  4: ["임시 비밀번호 발급", "확인"],
 };
 
 export default function LoginModal({
@@ -56,12 +46,6 @@ export default function LoginModal({
     reset,
   } = useForm<LoginForm>();
 
-  function handleClose() {
-    setMode(Mode.LOGIN);
-    reset();
-    onClose();
-  }
-
   function onValid({
     email,
     emailAddress,
@@ -70,21 +54,27 @@ export default function LoginModal({
   }: LoginForm) {
     const combinedEmail = `${email}@${emailAddress}`;
 
-    if (mode === Mode.LOGIN) {
-      // 로그인 로직
-    } else if (mode === Mode.SIGN_UP) {
-      // 회원가입 로직
-      setMode(Mode.AFTER_SIGN_UP);
-    } else {
-      // 임시 비밀번호 발급 로직
-      setMode(Mode.AFTER_FIND_PW);
+    switch (mode) {
+      case Mode.LOGIN:
+        // 로그인 로직
+        break;
+      case Mode.SIGN_UP:
+        // 회원가입 로직
+        setMode(Mode.AFTER_SIGN_UP);
+        break;
+      case Mode.FIND_PW:
+        // 임시 비밀번호 발급 로직
+        setMode(Mode.ISSUE_PW);
+        break;
     }
   }
 
-  function handleIssueTempPw() {
-    console.log(getValues());
-    setMode(Mode.ISSUE_PW);
-  }
+  useEffect(() => {
+    return () => {
+      setMode(Mode.LOGIN);
+      reset();
+    };
+  }, [isOpen, reset]);
 
   let bodyContent = (
     <>
@@ -132,11 +122,11 @@ export default function LoginModal({
           {texts[mode][1]}
         </Button>
       </form>
-      <div className="py-2 flex justify-end items-center text-sm text-gray-500">
+      <div className="py-2 flex justify-end items-center text-sm text-gray-500 gap-6">
         {mode === Mode.LOGIN ? (
           <>
             <div
-              className="mr-6 cursor-pointer"
+              className="cursor-pointer"
               onClick={() => setMode(Mode.SIGN_UP)}
             >
               회원가입
@@ -148,6 +138,10 @@ export default function LoginModal({
               비밀번호 찾기
             </div>
           </>
+        ) : mode === Mode.SIGN_UP ? (
+          <div className="cursor-pointer" onClick={() => setMode(Mode.LOGIN)}>
+            로그인
+          </div>
         ) : null}
       </div>
     </>
@@ -157,7 +151,7 @@ export default function LoginModal({
     bodyContent = (
       <>
         <div>이메일을 통해 본인인증을 완료해 주시기 바랍니다.</div>
-        <Button className="my-3" onClick={handleClose}>
+        <Button className="my-3" onClick={onClose}>
           {texts[mode][1]}
         </Button>
       </>
@@ -167,7 +161,7 @@ export default function LoginModal({
   if (mode === Mode.FIND_PW) {
     bodyContent = (
       <>
-        <form className="space-y-3 mb-6" onSubmit={handleSubmit(onValid)}>
+        <form className="space-y-3 mb-6">
           <div className="flex items-center">
             <Input
               {...register("email", { required: true })}
@@ -191,21 +185,14 @@ export default function LoginModal({
               ))}
             </Select>
           </div>
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={handleSubmit(onValid)}
+          >
             {texts[mode][1]}
           </Button>
         </form>
-      </>
-    );
-  }
-
-  if (mode === Mode.AFTER_FIND_PW) {
-    bodyContent = (
-      <>
-        <div>현재 비밀번호는 ... 입니다.</div>
-        <Button className="my-3" onClick={handleIssueTempPw}>
-          {texts[mode][1]}
-        </Button>
       </>
     );
   }
@@ -214,7 +201,7 @@ export default function LoginModal({
     bodyContent = (
       <>
         <div>해당 이메일로 임시 비밀번호가 발급되었습니다.</div>
-        <Button className="my-3" onClick={handleClose}>
+        <Button className="my-3" onClick={onClose}>
           {texts[mode][1]}
         </Button>
       </>
@@ -222,15 +209,13 @@ export default function LoginModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} onClose={handleClose}>
-      <ModalContent>
-        {() => (
-          <>
-            <ModalHeader>{texts[mode][0]}</ModalHeader>
-            <ModalBody>{bodyContent}</ModalBody>
-          </>
-        )}
-      </ModalContent>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      onClose={onClose}
+      headerContent={texts[mode][0]}
+    >
+      {bodyContent}
     </Modal>
   );
 }

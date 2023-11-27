@@ -28,16 +28,15 @@ export default function UploadDishPhoto() {
           className="w-full h-full flex justify-center items-center cursor-pointer"
         >
           클릭해서 사진 업로드
+          {item.file?.url && (
+            <Image
+              src={item.file.url}
+              alt="썸네일"
+              className="w-full h-full object-cover cursor-pointer rounded-2xl"
+              classNames={{ wrapper: "absolute inset-2" }}
+            />
+          )}
         </label>
-        {item.file?.url && (
-          <Image
-            src={item.file.url}
-            alt="썸네일"
-            className="w-full h-full object-cover cursor-pointer rounded-2xl"
-            classNames={{ wrapper: "absolute inset-2" }}
-            onClick={() => uploadPhoto(item.id, null)}
-          />
-        )}
       </div>
       <input
         id="file"
