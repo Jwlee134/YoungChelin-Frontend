@@ -1,5 +1,6 @@
 import {
   Modal as ModalComponent,
+  ModalProps as ModalComponentProps,
   ModalBody,
   ModalContent,
   ModalHeader,
@@ -7,7 +8,7 @@ import {
 } from "@nextui-org/react";
 import { ReactNode } from "react";
 
-interface ModalProps {
+interface ModalProps extends Omit<ModalComponentProps, "children"> {
   isOpen: boolean;
   onOpenChange: () => void;
   onClose: () => void;
@@ -23,12 +24,14 @@ export default function Modal({
   headerContent,
   footerContent,
   children,
+  ...rest
 }: ModalProps) {
   return (
     <ModalComponent
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       onClose={onClose}
+      {...rest}
     >
       <ModalContent>
         {(onClose) => (

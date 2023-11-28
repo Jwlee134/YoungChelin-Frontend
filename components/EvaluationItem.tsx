@@ -31,12 +31,7 @@ export default function EvaluationItem({ item, type, onClick }: Props) {
     : items[Math.floor(cursor / 2)][type] === item.value;
 
   return (
-    <Tooltip
-      key={item.value}
-      showArrow
-      closeDelay={0}
-      content={item.description}
-    >
+    <Tooltip showArrow closeDelay={0} content={item.description}>
       <motion.div
         initial={{
           translateX: item.pos.x / 1.2,
