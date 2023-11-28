@@ -2,20 +2,28 @@
 
 import { cls } from "@/libs/utils";
 import { Input } from "@nextui-org/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { IoSearchOutline } from "react-icons/io5";
+import queryString from "query-string";
 
 interface SearchForm {
   keyword: string;
 }
 
 export default function SearchBar() {
-  const { register, handleSubmit } = useForm<SearchForm>();
+  const params = useSearchParams();
+  const initialKeyword = params.get("keyword");
+  const { register, handleSubmit } = useForm<SearchForm>({
+    defaultValues: { keyword: initialKeyword || "" },
+  });
   const pathname = usePathname();
+  const router = useRouter();
 
-  function onValid(data: SearchForm) {
-    console.log(data);
+  function onValid({ keyword }: SearchForm) {
+    const obj = queryString.parse(params.toString());
+    obj["keyword"] = keyword;
+    router.replace(`/search?${queryString.stringify(obj)}`);
   }
 
   return (
