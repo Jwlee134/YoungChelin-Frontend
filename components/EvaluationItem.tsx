@@ -1,11 +1,10 @@
-import useEvaluationStore, {
-  EvaluationItems,
-} from "@/hooks/useEvaluationStore";
 import { evaluationItems } from "@/libs/constants";
+import { EvaluationItems } from "@/libs/redux/slices/evaluationSlice";
+import { useSelector } from "@/libs/redux/store";
 import { cls } from "@/libs/utils";
 import { Image, Tooltip } from "@nextui-org/react";
 import { motion } from "framer-motion";
-import { useShallow } from "zustand/react/shallow";
+import { shallowEqual } from "react-redux";
 
 interface Props {
   item: {
@@ -19,11 +18,12 @@ interface Props {
 }
 
 export default function EvaluationItem({ item, type, onClick }: Props) {
-  const { items, cursor } = useEvaluationStore(
-    useShallow((state) => ({
-      items: state.evaluationItems,
-      cursor: state.evaluationCursor,
-    }))
+  const { items, cursor } = useSelector(
+    ({ evaluation }) => ({
+      items: evaluation.evaluationItems,
+      cursor: evaluation.evaluationCursor,
+    }),
+    shallowEqual
   );
 
   const condition = Array.isArray(items[Math.floor(cursor / 2)][type])
@@ -31,7 +31,11 @@ export default function EvaluationItem({ item, type, onClick }: Props) {
     : items[Math.floor(cursor / 2)][type] === item.value;
 
   return (
-    <Tooltip showArrow closeDelay={0} content={item.description}>
+    <Tooltip
+      showArrow
+      closeDelay={0}
+      content={evaluationItems[type].data[item.value].description}
+    >
       <motion.div
         initial={{
           translateX: item.pos.x / 1.2,

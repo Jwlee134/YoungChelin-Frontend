@@ -1,9 +1,10 @@
 "use client";
 
 import EvaluationDish from "@/components/EvaluationDish";
-import useEvaluationStore from "@/hooks/useEvaluationStore";
+import { evaluationActions } from "@/libs/redux/slices/evaluationSlice";
+import { useDispatch, useSelector } from "@/libs/redux/store";
 import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
+import { shallowEqual } from "react-redux";
 
 /* 
 (1,0)
@@ -14,20 +15,20 @@ import { useShallow } from "zustand/react/shallow";
 */
 
 export default function Evaluate() {
-  const { length, cursor, setCursor } = useEvaluationStore(
-    useShallow((state) => ({
-      evaluationItems: state.evaluationItems,
-      length: state.evaluationItems.length * 2,
-      cursor: state.evaluationCursor,
-      setCursor: state.setEvaluationCursor,
-    }))
+  const { length, cursor } = useSelector(
+    ({ evaluation }) => ({
+      length: evaluation.evaluationItems.length * 2,
+      cursor: evaluation.evaluationCursor,
+    }),
+    shallowEqual
   );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     return () => {
-      setCursor(0);
+      dispatch(evaluationActions.setEvaluationCursor(0));
     };
-  }, [setCursor]);
+  }, [dispatch]);
 
   return (
     <div className="flex overflow-hidden">

@@ -1,31 +1,34 @@
 "use client";
 
-import useEvaluationStore, {
+import {
   EvaluationSteps,
-} from "@/hooks/useEvaluationStore";
+  evaluationActions,
+} from "@/libs/redux/slices/evaluationSlice";
+import { useDispatch, useSelector } from "@/libs/redux/store";
+import { getFileFromBase64 } from "@/libs/utils";
 import { Button } from "@nextui-org/react";
 import { usePathname, useRouter } from "next/navigation";
-import { useShallow } from "zustand/react/shallow";
+import { shallowEqual } from "react-redux";
 
 export default function EvaluationFooter() {
   const router = useRouter();
   const pathname = usePathname();
-  const { restaurant, items, totalLength, cursor, setCursor, isPhotoStep } =
-    useEvaluationStore(
-      useShallow((state) => ({
-        restaurant: state.restaurant,
-        items: state.evaluationItems,
-        totalLength: state.evaluationItems.length * 2,
-        cursor: state.evaluationCursor,
-        setCursor: state.setEvaluationCursor,
-        isPhotoStep: state.evaluationCursor % 2 === 1,
-      }))
-    );
+  const { restaurant, items, totalLength, cursor, isPhotoStep } = useSelector(
+    ({ evaluation }) => ({
+      restaurant: evaluation.restaurant,
+      items: evaluation.evaluationItems,
+      totalLength: evaluation.evaluationItems.length * 2,
+      cursor: evaluation.evaluationCursor,
+      isPhotoStep: evaluation.evaluationCursor % 2 === 1,
+    }),
+    shallowEqual
+  );
+  const dispatch = useDispatch();
   const evaluationIdx = Math.floor(cursor / 2);
 
   function handlePrev() {
     if (pathname === EvaluationSteps.EVALUATE && cursor !== 0) {
-      setCursor(cursor - 1);
+      dispatch(evaluationActions.setEvaluationCursor(cursor - 1));
     } else {
       router.back();
     }
@@ -34,10 +37,15 @@ export default function EvaluationFooter() {
   function handleNext() {
     if (pathname === EvaluationSteps.EVALUATE) {
       if (cursor < totalLength - 1) {
-        setCursor(cursor + 1);
+        dispatch(evaluationActions.setEvaluationCursor(cursor + 1));
       } else {
         // 평가 업로드 로직
-        console.log(items);
+        Promise.all(
+          items.map(async (item) => {
+            const file = await getFileFromBase64(item.id, item.fileUrl!);
+            return { ...item, file };
+          })
+        ).then((items) => console.log(items));
       }
     } else {
       switch (pathname) {
@@ -59,8 +67,8 @@ export default function EvaluationFooter() {
         return !items.length;
       case EvaluationSteps.EVALUATE:
         return isPhotoStep
-          ? !items[evaluationIdx].file
-          : items[evaluationIdx].flavor === null;
+          ? !items[evaluationIdx]?.fileUrl
+          : items[evaluationIdx]?.flavor === null;
       default:
         return false;
     }

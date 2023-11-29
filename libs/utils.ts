@@ -16,3 +16,9 @@ export function getBase64(file: File): Promise<string> {
     reader.onload = () => resolve(reader.result as string);
   });
 }
+
+export async function getFileFromBase64(id: number, url: string) {
+  return await fetch(url)
+    .then((res) => res.blob())
+    .then((blob) => new File([blob], `${id}-thumbnail`, { type: blob.type }));
+}

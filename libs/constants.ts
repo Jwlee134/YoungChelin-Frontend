@@ -1,4 +1,4 @@
-import { EvaluationItems } from "@/hooks/useEvaluationStore";
+import { EvaluationItems } from "./redux/slices/evaluationSlice";
 
 export const evaluationItems = {
   [EvaluationItems.FLAVOR]: {

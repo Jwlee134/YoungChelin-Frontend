@@ -1,29 +1,38 @@
-import useEvaluationStore, {
-  EvaluationItems,
-} from "@/hooks/useEvaluationStore";
 import { AnimatePresence } from "framer-motion";
-import { useShallow } from "zustand/react/shallow";
 import EvaluationItem from "./EvaluationItem";
 import { evaluationItems } from "@/libs/constants";
 import { cls, handleConsonant } from "@/libs/utils";
 import UploadDishPhoto from "./UploadDishPhoto";
+import { useDispatch, useSelector } from "@/libs/redux/store";
+import {
+  EvaluationItems,
+  evaluationActions,
+} from "@/libs/redux/slices/evaluationSlice";
 
 export default function EvaluationDish() {
-  const { cursor, items, evaluate, manageEvaluationMode } = useEvaluationStore(
-    useShallow((state) => ({
-      cursor: state.evaluationCursor,
-      items: state.evaluationItems,
-      evaluate: state.evaluateDish,
-      manageEvaluationMode: state.manageEvaluationMode,
-    }))
-  );
+  const { cursor, items } = useSelector(({ evaluation }) => ({
+    cursor: evaluation.evaluationCursor,
+    items: evaluation.evaluationItems,
+  }));
+  const dispatch = useDispatch();
   const evaluationIdx = Math.floor(cursor / 2);
   const isEvaluate = cursor % 2 === 0;
 
   function handleItemClick(v: EvaluationItems) {
     if (items[evaluationIdx].mode === v)
-      manageEvaluationMode(items[evaluationIdx].id, null);
-    else manageEvaluationMode(items[evaluationIdx].id, v);
+      dispatch(
+        evaluationActions.manageEvaluationMode({
+          dishId: items[evaluationIdx].id,
+          v: null,
+        })
+      );
+    else
+      dispatch(
+        evaluationActions.manageEvaluationMode({
+          dishId: items[evaluationIdx].id,
+          v,
+        })
+      );
   }
 
   return (
@@ -48,10 +57,12 @@ export default function EvaluationDish() {
                     item={item}
                     type={EvaluationItems.FLAVOR}
                     onClick={() =>
-                      evaluate(
-                        items[evaluationIdx].id,
-                        item.value,
-                        EvaluationItems.FLAVOR
+                      dispatch(
+                        evaluationActions.evaluateDish({
+                          dishId: items[evaluationIdx].id,
+                          v: item.value,
+                          type: EvaluationItems.FLAVOR,
+                        })
                       )
                     }
                   />
@@ -79,10 +90,12 @@ export default function EvaluationDish() {
                       item={item}
                       type={EvaluationItems.MOOD}
                       onClick={() =>
-                        evaluate(
-                          items[evaluationIdx].id,
-                          item.value,
-                          EvaluationItems.MOOD
+                        dispatch(
+                          evaluationActions.evaluateDish({
+                            dishId: items[evaluationIdx].id,
+                            v: item.value,
+                            type: EvaluationItems.MOOD,
+                          })
                         )
                       }
                     />
@@ -112,10 +125,12 @@ export default function EvaluationDish() {
                         item={item}
                         type={EvaluationItems.CLEANLINESS}
                         onClick={() =>
-                          evaluate(
-                            items[evaluationIdx].id,
-                            item.value,
-                            EvaluationItems.CLEANLINESS
+                          dispatch(
+                            evaluationActions.evaluateDish({
+                              dishId: items[evaluationIdx].id,
+                              v: item.value,
+                              type: EvaluationItems.CLEANLINESS,
+                            })
                           )
                         }
                       />
@@ -160,10 +175,12 @@ export default function EvaluationDish() {
                       item={item}
                       type={EvaluationItems.PLATING}
                       onClick={() =>
-                        evaluate(
-                          items[evaluationIdx].id,
-                          item.value,
-                          EvaluationItems.PLATING
+                        dispatch(
+                          evaluationActions.evaluateDish({
+                            dishId: items[evaluationIdx].id,
+                            v: item.value,
+                            type: EvaluationItems.PLATING,
+                          })
                         )
                       }
                     />
@@ -192,10 +209,12 @@ export default function EvaluationDish() {
                       item={item}
                       type={EvaluationItems.SERVICE}
                       onClick={() =>
-                        evaluate(
-                          items[evaluationIdx].id,
-                          item.value,
-                          EvaluationItems.SERVICE
+                        dispatch(
+                          evaluationActions.evaluateDish({
+                            dishId: items[evaluationIdx].id,
+                            v: item.value,
+                            type: EvaluationItems.SERVICE,
+                          })
                         )
                       }
                     />

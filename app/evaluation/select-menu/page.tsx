@@ -1,10 +1,11 @@
 "use client";
 
-import useEvaluationStore from "@/hooks/useEvaluationStore";
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
-import { useShallow } from "zustand/react/shallow";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { AnimatePresence, motion } from "framer-motion";
+import { useDispatch, useSelector } from "@/libs/redux/store";
+import { shallowEqual } from "react-redux";
+import { evaluationActions } from "@/libs/redux/slices/evaluationSlice";
 
 const list = [
   {
@@ -35,13 +36,14 @@ const list = [
 ];
 
 export default function SelectMenu() {
-  const { name, manageDishes, ids } = useEvaluationStore(
-    useShallow((state) => ({
-      name: state.restaurant.name,
-      manageDishes: state.manageDishes,
-      ids: state.evaluationItems.map((item) => item.id),
-    }))
+  const { name, ids } = useSelector(
+    ({ evaluation }) => ({
+      name: evaluation.restaurant.name,
+      ids: evaluation.evaluationItems.map((item) => item.id),
+    }),
+    shallowEqual
   );
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -51,7 +53,14 @@ export default function SelectMenu() {
           <Card
             key={item.menuId}
             isPressable
-            onPress={() => manageDishes(item.menuId, item.menuName)}
+            onPress={() =>
+              dispatch(
+                evaluationActions.manageDishes({
+                  id: item.menuId,
+                  name: item.menuName,
+                })
+              )
+            }
             className="relative"
           >
             <CardBody className="p-0">

@@ -2,44 +2,35 @@
 
 import { Document } from "@/app/api/keyword/route";
 import useDebounce from "@/hooks/useDebounce";
-import useEvaluationStore from "@/hooks/useEvaluationStore";
+import { evaluationActions } from "@/libs/redux/slices/evaluationSlice";
+import { useDispatch, useSelector } from "@/libs/redux/store";
 import { Input, Listbox, ListboxItem, Selection } from "@nextui-org/react";
 import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useShallow } from "zustand/react/shallow";
+import { shallowEqual } from "react-redux";
 
 declare global {
   interface Window {
     kakao: any;
   }
 }
+
 interface MapForm {
   keyword: string;
 }
 
 export default function Map() {
-  const {
-    map,
-    setMap,
-    keyword,
-    setKeyword,
-    restaurant,
-    setRestaurant,
-    data,
-    setData,
-  } = useEvaluationStore(
-    useShallow((state) => ({
-      map: state.map,
-      setMap: state.setMap,
-      keyword: state.keyword,
-      setKeyword: state.setKeyword,
-      restaurant: state.restaurant,
-      setRestaurant: state.setRestaurant,
-      data: state.data,
-      setData: state.setData,
-    }))
+  const { map, keyword, restaurant, data } = useSelector(
+    ({ evaluation }) => ({
+      map: evaluation.map,
+      keyword: evaluation.addressKeyword,
+      restaurant: evaluation.restaurant,
+      data: evaluation.addressData,
+    }),
+    shallowEqual
   );
+  const dispatch = useDispatch();
   const ref = useRef<HTMLDivElement>(null);
   const keywordRef = useRef("");
   const initialDataRef = useRef({
@@ -86,9 +77,9 @@ export default function Map() {
           overlay.setMap(mapRef.current);
           setOverlays((overlays) => [...overlays, overlay]);
         });
-        setData(res.data);
+        dispatch(evaluationActions.setAddressData(res.data));
       });
-  }, [debouncedValue, setData]);
+  }, [debouncedValue, dispatch]);
 
   function onValid({ keyword }: MapForm) {
     if (!keyword) return;
@@ -123,10 +114,12 @@ export default function Map() {
       const coords = mapRef.current?.getCenter();
       const level = mapRef.current?.getLevel();
       if (coords?.Ma && coords?.La && level)
-        setMap({ lat: coords.Ma, lng: coords.La, level });
-      setKeyword(keywordRef.current);
+        dispatch(
+          evaluationActions.setMap({ lat: coords.Ma, lng: coords.La, level })
+        );
+      dispatch(evaluationActions.setAddressKeyword(keywordRef.current));
     };
-  }, [setMap, setKeyword, setValue]);
+  }, [dispatch, setValue]);
 
   useEffect(() => {
     if (!mapRef.current || !debouncedValue) return;
@@ -136,20 +129,22 @@ export default function Map() {
 
   useEffect(() => {
     if (!value && data && data.length > 0) {
-      setData(null);
+      dispatch(evaluationActions.setAddressData(null));
       resetOverlays();
     }
-  }, [value, data, setData]);
+  }, [value, data, dispatch]);
 
   function onSelectionChange(keys: Selection) {
     const item = data?.find((item) => item.id === Array.from(keys).join(""))!;
-    setRestaurant({
-      addr: item.road_address_name,
-      id: parseInt(item.id, 10),
-      name: item.place_name,
-      x: parseFloat(item.x),
-      y: parseFloat(item.y),
-    });
+    dispatch(
+      evaluationActions.setRestaurant({
+        addr: item.road_address_name,
+        id: parseInt(item.id, 10),
+        name: item.place_name,
+        x: parseFloat(item.x),
+        y: parseFloat(item.y),
+      })
+    );
   }
 
   const emptyContent =

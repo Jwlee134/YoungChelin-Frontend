@@ -1,22 +1,23 @@
-import useEvaluationStore from "@/hooks/useEvaluationStore";
+import { evaluationActions } from "@/libs/redux/slices/evaluationSlice";
+import { useDispatch, useSelector } from "@/libs/redux/store";
 import { getBase64 } from "@/libs/utils";
 import { Image } from "@nextui-org/react";
 import { ChangeEvent } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 export default function UploadDishPhoto() {
-  const { item, uploadPhoto } = useEvaluationStore(
-    useShallow((state) => ({
-      item: state.evaluationItems[Math.floor(state.evaluationCursor / 2)],
-      uploadPhoto: state.uploadPhoto,
-    }))
+  const item = useSelector(
+    (state) =>
+      state.evaluation.evaluationItems[
+        Math.floor(state.evaluation.evaluationCursor / 2)
+      ]
   );
+  const dispatch = useDispatch();
 
   async function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = await getBase64(file);
-    uploadPhoto(item.id, { file, url });
+    dispatch(evaluationActions.uploadPhoto({ dishId: item.id, data: url }));
     e.target.value = "";
   }
 
@@ -28,9 +29,9 @@ export default function UploadDishPhoto() {
           className="w-full h-full flex justify-center items-center cursor-pointer"
         >
           클릭해서 사진 업로드
-          {item.file?.url && (
+          {item.fileUrl && (
             <Image
-              src={item.file.url}
+              src={item.fileUrl}
               alt="썸네일"
               className="w-full h-full object-cover cursor-pointer rounded-2xl"
               classNames={{ wrapper: "absolute inset-2" }}
