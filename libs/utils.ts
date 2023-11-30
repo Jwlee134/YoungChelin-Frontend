@@ -22,3 +22,11 @@ export async function getFileFromBase64(id: number, url: string) {
     .then((res) => res.blob())
     .then((blob) => new File([blob], `${id}-thumbnail`, { type: blob.type }));
 }
+
+export function getToken() {
+  return localStorage.getItem("token:youngchelin");
+}
+
+export function setToken(token: string) {
+  localStorage.setItem("token:youngchelin", token);
+}
