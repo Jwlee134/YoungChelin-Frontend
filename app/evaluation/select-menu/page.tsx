@@ -9,20 +9,20 @@ import {
 } from "@nextui-org/react";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { AnimatePresence, motion } from "framer-motion";
-import { useDispatch, useSelector } from "@/libs/redux/store";
-import { shallowEqual } from "react-redux";
+import { RootState, useDispatch, useSelector } from "@/libs/redux/store";
 import { evaluationActions } from "@/libs/redux/slices/evaluationSlice";
 import AddMenuModal from "@/components/modals/AddMenuModal";
 import { evaluateApi } from "@/libs/redux/api/evaluateApi";
+import { createSelector } from "@reduxjs/toolkit";
+
+const selectIds = createSelector(
+  (state: RootState) => state.evaluation.evaluationItems,
+  (items) => items.map((item) => item.id)
+);
 
 export default function SelectMenu() {
-  const { restaurant, ids } = useSelector(
-    ({ evaluation }) => ({
-      restaurant: evaluation.restaurant,
-      ids: evaluation.evaluationItems.map((item) => item.id),
-    }),
-    shallowEqual
-  );
+  const restaurant = useSelector((state) => state.evaluation.restaurant);
+  const ids = useSelector(selectIds);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { data } = evaluateApi.useGetDishesQuery(restaurant?.id + "", {
