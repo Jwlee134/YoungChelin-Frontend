@@ -80,6 +80,7 @@ export const userApi = api.injectEndpoints({
         url: "/mypage/profile-upload",
         method: "POST",
         body,
+        headers: { "Content-Type": "multipart/form-data;" },
       }),
       invalidatesTags: [{ type: "Profile" }],
     }),
@@ -101,6 +102,15 @@ export const userApi = api.injectEndpoints({
               { type: "EvaluationHistory", id: "LIST" },
             ]
           : [{ type: "EvaluationHistory", id: "LIST" }],
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.push(...newItems);
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
 
     getTopTen: build.query<TopTenDto[], void>({
@@ -114,7 +124,7 @@ export const userApi = api.injectEndpoints({
                 type: "TopTen" as const,
                 id: item.menuId,
               })),
-              { type: "EvaluationHistory", id: "LIST" },
+              { type: "TopTen", id: "LIST" },
             ]
           : [{ type: "TopTen", id: "LIST" }],
     }),

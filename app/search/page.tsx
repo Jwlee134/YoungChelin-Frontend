@@ -1,8 +1,12 @@
 "use client";
 
 import { evaluationItems } from "@/libs/constants";
+import { homeApi } from "@/libs/redux/api/homeApi";
 import {
   Button,
+  Card,
+  CardBody,
+  CardFooter,
   Checkbox,
   Divider,
   Dropdown,
@@ -11,18 +15,33 @@ import {
   DropdownTrigger,
   Image,
 } from "@nextui-org/react";
+import { useInView } from "framer-motion";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import queryString, { ParsedQuery } from "query-string";
-import { Key, useEffect, useState } from "react";
+import { Key, useEffect, useRef, useState } from "react";
 import { IoRefresh } from "react-icons/io5";
 
 export default function Search() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const keyword = searchParams.get("keyword");
   const [parsed, setParsed] = useState<ParsedQuery<string>>(
     queryString.parse(searchParams.toString())
   );
+  const [id, setId] = useState(0);
+  const [getByKeyword, { data: keywordData }] =
+    homeApi.useLazyGetByKeywordQuery();
+  const [getByFilter, { data: filterData }] = homeApi.useLazyGetByFilterQuery();
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref);
+  const data = Object.keys(parsed).length > 1 ? filterData : keywordData;
+
+  useEffect(() => {
+    if (!inView || !data) return;
+    if (data.length && inView) setId(parseInt(data[data.length - 1].id));
+  }, [inView, data]);
 
   function handleMenuClick(key: Key, i: number) {
     const label = Object.keys(evaluationItems)[i];
@@ -50,8 +69,15 @@ export default function Search() {
 
   useEffect(() => {
     const url = `${pathname}?${searchParams}`;
-    console.log(url); // API 요청
-  }, [pathname, searchParams]);
+    const params = url.split("?")[1];
+    if (Object.keys(queryString.parse(params)).length === 1) {
+      // 키워드만 존재
+      getByKeyword({ id, qs: params });
+    } else {
+      // 필터 적용됨
+      getByFilter({ id, qs: params });
+    }
+  }, [pathname, searchParams, id, getByKeyword, getByFilter]);
 
   return (
     <div className="pt-12 px-6">
@@ -132,7 +158,6 @@ export default function Search() {
               variant="bordered"
               className="text-xl"
               onClick={() => {
-                const keyword = searchParams.get("keyword");
                 router.replace(`/search?keyword=${keyword}`);
                 setParsed({ keyword });
               }}
@@ -149,6 +174,43 @@ export default function Search() {
             필터 적용
           </Button>
         </div>
+      </div>
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 py-12">
+        {data?.map((item, i) => (
+          <Card
+            key={item.menuId}
+            className="relative"
+            as={Link}
+            href={`/dishes/${item.menuId}`}
+            ref={i === data.length - 1 ? ref : undefined}
+          >
+            <CardBody className="p-0">
+              <Image
+                shadow="sm"
+                radius="none"
+                alt="썸네일"
+                className="w-full object-cover aspect-[4/3]"
+                src={item.url}
+                isZoomed
+              />
+            </CardBody>
+            <CardFooter className="text-small flex justify-between items-center">
+              <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis">
+                {item.menuName}
+              </div>
+              <Image
+                classNames={{ wrapper: "shrink-0 ml-1" }}
+                width={54}
+                src={
+                  evaluationItems.flavor.data.find(
+                    (data) => data.value + "" === item.evaluate.flavor
+                  )?.src
+                }
+                alt="맛 평가 항목"
+              />
+            </CardFooter>
+          </Card>
+        ))}
       </div>
     </div>
   );

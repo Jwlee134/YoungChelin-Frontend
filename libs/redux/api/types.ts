@@ -14,6 +14,7 @@ interface ResultDto {
   price: string;
   plating: string;
   mood: string[];
+  [key: string]: string | string[];
 }
 
 interface EvaluateDto {
@@ -62,6 +63,7 @@ interface RecommendationResponseDto {
   recommend: RecommendDto[];
   hotMenu: RecommendDto[];
   steadyMenu: RecommendDto[];
+  [key: string]: RecommendDto[];
 }
 
 interface RegisterDto extends EmailDto, LoginDto {}
@@ -86,6 +88,7 @@ interface DetailDto {
   menuId: number;
   restaurantId: string;
   resultDto: ResultDto;
+  url: string;
   statistics: Statistics[];
 }
 

@@ -2,6 +2,9 @@ import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "./Modal";
+import { userApi } from "@/libs/redux/api/userApi";
+import { setToken } from "@/libs/utils";
+import EmailInputs from "../EmailInputs";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -9,11 +12,12 @@ interface LoginModalProps {
   onClose: () => void;
 }
 
-interface LoginForm {
+export interface LoginForm {
+  username: string;
   email: string;
   emailAddress: string;
   password: string;
-  passwordConfirm: string;
+  error: string;
 }
 
 enum Mode {
@@ -21,15 +25,19 @@ enum Mode {
   SIGN_UP,
   AFTER_SIGN_UP,
   FIND_PW,
-  ISSUE_PW,
+  AFTER_FIND_PW,
+  FIND_ID,
+  AFTER_FIND_ID,
 }
 
 const texts = {
   0: ["로그인", "로그인"],
-  1: ["회원가입", "회원가입"],
-  2: ["가입이 완료되었습니다.", "확인"],
+  1: ["회원가입", "이메일 인증"],
+  2: ["인증 링크가 전송되었습니다.", "확인"],
   3: ["비밀번호 찾기", "비밀번호 찾기"],
   4: ["임시 비밀번호 발급", "확인"],
+  5: ["아이디 찾기", "확인"],
+  6: ["아이디 찾기", "확인"],
 };
 
 export default function LoginModal({
@@ -42,66 +50,70 @@ export default function LoginModal({
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
     reset,
   } = useForm<LoginForm>();
+  const [login, { isLoading: isLoggingIn }] = userApi.useLoginMutation();
+  const [sendEmail, { isLoading: isSendingEmail }] =
+    userApi.useSendEmailMutation();
+  const [findId, { isLoading: isFindingId }] = userApi.useFindIdMutation();
+  const [findPw, { isLoading: isFindingPw }] = userApi.useFindPwMutation();
+  const [foundUsername, setFoundUsername] = useState("");
 
-  function onValid({
-    email,
-    emailAddress,
-    password,
-    passwordConfirm,
-  }: LoginForm) {
+  function onValid({ email, emailAddress, password }: LoginForm) {
     const combinedEmail = `${email}@${emailAddress}`;
 
     switch (mode) {
       case Mode.LOGIN:
-        // 로그인 로직
+        login({ userName: combinedEmail, password })
+          .unwrap()
+          .then(({ token }) => {
+            setToken(token);
+            onClose();
+          });
         break;
       case Mode.SIGN_UP:
-        // 회원가입 로직
-        setMode(Mode.AFTER_SIGN_UP);
+        sendEmail({ email: combinedEmail })
+          .unwrap()
+          .then(() => {
+            setMode(Mode.AFTER_SIGN_UP);
+          });
         break;
       case Mode.FIND_PW:
-        // 임시 비밀번호 발급 로직
-        setMode(Mode.ISSUE_PW);
+        findPw({ email: combinedEmail })
+          .unwrap()
+          .then(() => {
+            setMode(Mode.AFTER_FIND_PW);
+          });
+
         break;
+      case Mode.FIND_ID:
+        findId({ email: combinedEmail })
+          .unwrap()
+          .then((username) => {
+            setFoundUsername(username);
+            setMode(Mode.AFTER_FIND_ID);
+          });
     }
   }
 
   useEffect(() => {
     return () => {
       setMode(Mode.LOGIN);
+      setFoundUsername("");
       reset();
     };
   }, [isOpen, reset]);
 
   let bodyContent = (
     <>
-      <form className="space-y-3" onSubmit={handleSubmit(onValid)}>
-        <div className="flex items-center">
-          <Input
-            {...register("email", { required: true })}
-            autoFocus
-            label="이메일"
-            variant="bordered"
-            isInvalid={!!errors.email}
-          />
-          <span className="mx-2 text-gray-400">@</span>
-          <Select
-            {...register("emailAddress", { required: true })}
-            variant="bordered"
-            label="주소 선택"
-            className="w-52"
-            isInvalid={!!errors.emailAddress}
-          >
-            {["yu.ac.kr", "ynu.kr"].map((addr) => (
-              <SelectItem key={addr} value={addr}>
-                {addr}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
+      <form className="space-y-3">
+        <Input
+          {...register("username", { required: true })}
+          autoFocus
+          label="아이디"
+          variant="bordered"
+          isInvalid={!!errors.password}
+        />
         <Input
           {...register("password", { required: true })}
           type="password"
@@ -109,43 +121,51 @@ export default function LoginModal({
           variant="bordered"
           isInvalid={!!errors.password}
         />
-        {mode === Mode.SIGN_UP ? (
-          <Input
-            {...register("passwordConfirm", { required: true })}
-            type="password"
-            label="비밀번호 확인"
-            variant="bordered"
-            isInvalid={!!errors.passwordConfirm}
-          />
-        ) : null}
-        <Button type="submit" className="w-full">
+        <Button
+          type="submit"
+          className="w-full"
+          onClick={handleSubmit(onValid)}
+          isLoading={isLoggingIn}
+        >
           {texts[mode][1]}
         </Button>
       </form>
       <div className="py-2 flex justify-end items-center text-sm text-gray-500 gap-6">
-        {mode === Mode.LOGIN ? (
-          <>
-            <div
-              className="cursor-pointer"
-              onClick={() => setMode(Mode.SIGN_UP)}
-            >
-              회원가입
-            </div>
-            <div
-              className="cursor-pointer"
-              onClick={() => setMode(Mode.FIND_PW)}
-            >
-              비밀번호 찾기
-            </div>
-          </>
-        ) : mode === Mode.SIGN_UP ? (
-          <div className="cursor-pointer" onClick={() => setMode(Mode.LOGIN)}>
-            로그인
-          </div>
-        ) : null}
+        <div className="cursor-pointer" onClick={() => setMode(Mode.SIGN_UP)}>
+          회원가입
+        </div>
+        <div className="cursor-pointer" onClick={() => setMode(Mode.FIND_ID)}>
+          아이디 찾기
+        </div>
+        <div className="cursor-pointer" onClick={() => setMode(Mode.FIND_PW)}>
+          비밀번호 찾기
+        </div>
       </div>
     </>
   );
+
+  if (mode === Mode.SIGN_UP) {
+    bodyContent = (
+      <>
+        <form className="space-y-3">
+          <EmailInputs register={register} errors={errors} />
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={handleSubmit(onValid)}
+            isLoading={isSendingEmail}
+          >
+            {texts[mode][1]}
+          </Button>
+        </form>
+        <div className="py-2 flex justify-end items-center text-sm text-gray-500 gap-6">
+          <div className="cursor-pointer" onClick={() => setMode(Mode.LOGIN)}>
+            로그인
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (mode === Mode.AFTER_SIGN_UP) {
     bodyContent = (
@@ -160,47 +180,51 @@ export default function LoginModal({
 
   if (mode === Mode.FIND_PW) {
     bodyContent = (
+      <form className="space-y-3 mb-6">
+        <EmailInputs register={register} errors={errors} />
+        <Button
+          type="submit"
+          className="w-full"
+          onClick={handleSubmit(onValid)}
+          isLoading={isFindingPw}
+        >
+          {texts[mode][1]}
+        </Button>
+      </form>
+    );
+  }
+
+  if (mode === Mode.AFTER_FIND_PW) {
+    bodyContent = (
       <>
-        <form className="space-y-3 mb-6">
-          <div className="flex items-center">
-            <Input
-              {...register("email", { required: true })}
-              autoFocus
-              label="이메일"
-              variant="bordered"
-              isInvalid={!!errors.email}
-            />
-            <span className="mx-2 text-gray-400">@</span>
-            <Select
-              {...register("emailAddress", { required: true })}
-              variant="bordered"
-              label="주소 선택"
-              className="w-52"
-              isInvalid={!!errors.emailAddress}
-            >
-              {["yu.ac.kr", "ynu.kr"].map((addr) => (
-                <SelectItem key={addr} value={addr}>
-                  {addr}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={handleSubmit(onValid)}
-          >
-            {texts[mode][1]}
-          </Button>
-        </form>
+        <div>해당 이메일로 임시 비밀번호가 발급되었습니다.</div>
+        <Button className="my-3" onClick={onClose}>
+          {texts[mode][1]}
+        </Button>
       </>
     );
   }
 
-  if (mode === Mode.ISSUE_PW) {
+  if (mode === Mode.FIND_ID) {
+    bodyContent = (
+      <form className="space-y-3 mb-6">
+        <EmailInputs register={register} errors={errors} />
+        <Button
+          type="submit"
+          className="w-full"
+          onClick={handleSubmit(onValid)}
+          isLoading={isFindingId}
+        >
+          {texts[mode][1]}
+        </Button>
+      </form>
+    );
+  }
+
+  if (mode === Mode.AFTER_FIND_ID) {
     bodyContent = (
       <>
-        <div>해당 이메일로 임시 비밀번호가 발급되었습니다.</div>
+        <div>아이디는 {foundUsername} 입니다.</div>
         <Button className="my-3" onClick={onClose}>
           {texts[mode][1]}
         </Button>

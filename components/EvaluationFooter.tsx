@@ -1,5 +1,6 @@
 "use client";
 
+import { evaluateApi } from "@/libs/redux/api/evaluateApi";
 import {
   EvaluationSteps,
   evaluationActions,
@@ -26,6 +27,11 @@ export default function EvaluationFooter() {
   const dispatch = useDispatch();
   const evaluationIdx = Math.floor(cursor / 2);
 
+  const [postRestaurant, { isLoading: isPostingRestaurant }] =
+    evaluateApi.usePostRestaurantMutation();
+  const [postEvaluation, { isLoading: isEvaluating }] =
+    evaluateApi.usePostEvaluationMutation();
+
   function handlePrev() {
     if (pathname === EvaluationSteps.EVALUATE && cursor !== 0) {
       dispatch(evaluationActions.setEvaluationCursor(cursor - 1));
@@ -45,12 +51,45 @@ export default function EvaluationFooter() {
             const file = await getFileFromBase64(item.id, item.fileUrl!);
             return { ...item, file };
           })
-        ).then((items) => console.log(items));
+        ).then((items) => {
+          Promise.all(
+            items.map((item) => {
+              const formData = new FormData();
+              formData.append("menuId", item.id + "");
+              formData.append("restaurantId", restaurant.id + "");
+              formData.append(
+                "resultDto",
+                JSON.stringify({
+                  flavor: item.flavor,
+                  mood: item.mode,
+                  service: item.service,
+                  price: item.price,
+                  cleanliness: item.cleanliness,
+                  plating: item.plating,
+                })
+              );
+              formData.append("file", item.file);
+              postEvaluation({ menuId: item.id + "", body: formData });
+            })
+          ).then(() => {
+            router.push("/");
+          });
+        });
       }
     } else {
       switch (pathname) {
         case EvaluationSteps.RESTAURANT:
-          router.push(EvaluationSteps.MENU);
+          postRestaurant({
+            place_name: restaurant.name,
+            restaurantId: restaurant.id + "",
+            road_address_name: restaurant.addr,
+            x: restaurant.x + "",
+            y: restaurant.y + "",
+          })
+            .unwrap()
+            .then(() => {
+              router.push(EvaluationSteps.MENU);
+            });
           break;
         case EvaluationSteps.MENU:
           router.push(EvaluationSteps.EVALUATE);
@@ -86,6 +125,7 @@ export default function EvaluationFooter() {
           onClick={handleNext}
           color="primary"
           isDisabled={handleDisabled()}
+          isLoading={isPostingRestaurant || isEvaluating}
         >
           {pathname === EvaluationSteps.EVALUATE && cursor === totalLength - 1
             ? "완료"

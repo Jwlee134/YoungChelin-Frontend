@@ -20,24 +20,71 @@ export const homeApi = api.injectEndpoints({
               { type: "Dish", id: "LIST" },
             ]
           : [{ type: "Dish", id: "LIST" }],
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.push(...newItems);
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
 
     getByKeyword: build.query<
       RestaurantEvaluateDto[],
-      { id?: number; size?: number; keyword: string }
+      { id?: number; size?: number; qs: string }
     >({
-      query: (data) => ({
-        url: `/home/search?${queryString.stringify(data)}`,
+      query: ({ id = 0, size = 20, qs }) => ({
+        url: `/home/search?${qs}&${queryString.stringify({ id, size })}`,
       }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map((item) => ({
+                type: "Dish" as const,
+                id: item.menuId,
+              })),
+              { type: "Dish", id: "LIST" },
+            ]
+          : [{ type: "Dish", id: "LIST" }],
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.push(...newItems);
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
 
     getByFilter: build.query<
       RestaurantEvaluateDto[],
       { id?: number; size?: number; qs: string }
     >({
-      query: ({ id, size, qs }) => ({
-        url: `/home/search/filter?${qs}${queryString.stringify({ id, size })}`,
+      query: ({ id = 0, size = 20, qs }) => ({
+        url: `/home/search/filter?${qs}&${queryString.stringify({ id, size })}`,
       }),
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map((item) => ({
+                type: "Dish" as const,
+                id: item.menuId,
+              })),
+              { type: "Dish", id: "LIST" },
+            ]
+          : [{ type: "Dish", id: "LIST" }],
+      serializeQueryArgs: ({ endpointName }) => {
+        return endpointName;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.push(...newItems);
+      },
+      forceRefetch({ currentArg, previousArg }) {
+        return currentArg !== previousArg;
+      },
     }),
   }),
 });

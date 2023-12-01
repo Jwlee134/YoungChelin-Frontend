@@ -1,55 +1,47 @@
 "use client";
 
-import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  Image,
+  useDisclosure,
+} from "@nextui-org/react";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDispatch, useSelector } from "@/libs/redux/store";
 import { shallowEqual } from "react-redux";
 import { evaluationActions } from "@/libs/redux/slices/evaluationSlice";
-
-const list = [
-  {
-    menuId: 143425,
-    menuName: "카이센동",
-    url: "https://nextui.org/images/fruit-1.jpeg",
-  },
-  {
-    menuId: 234235,
-    menuName: "스시",
-    url: "https://nextui.org/images/fruit-1.jpeg",
-  },
-  {
-    menuId: 37543,
-    menuName: "asdf",
-    url: "https://nextui.org/images/fruit-1.jpeg",
-  },
-  {
-    menuId: 47457,
-    menuName: "asdf",
-    url: "https://nextui.org/images/fruit-1.jpeg",
-  },
-  {
-    menuId: 52343,
-    menuName: "asdf",
-    url: "https://nextui.org/images/fruit-1.jpeg",
-  },
-];
+import AddMenuModal from "@/components/modals/AddMenuModal";
+import { evaluateApi } from "@/libs/redux/api/evaluateApi";
 
 export default function SelectMenu() {
-  const { name, ids } = useSelector(
+  const { restaurant, ids } = useSelector(
     ({ evaluation }) => ({
-      name: evaluation.restaurant.name,
+      restaurant: evaluation.restaurant,
       ids: evaluation.evaluationItems.map((item) => item.id),
     }),
     shallowEqual
   );
   const dispatch = useDispatch();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const { data } = evaluateApi.useGetDishesQuery(restaurant?.id + "", {
+    skip: !restaurant?.id,
+  });
 
   return (
     <>
-      <h1 className="text-xl font-bold mb-4">{name}에서 무엇을 드셨나요?</h1>
+      <h1 className="text-xl font-bold mb-4">
+        {restaurant?.name}에서 무엇을 드셨나요?
+      </h1>
+      <p className="mb-4 text-sm text-gray-500">
+        목록에 메뉴가 없나요?{" "}
+        <span className="underline cursor-pointer" onClick={onOpen}>
+          메뉴 추가하기
+        </span>
+      </p>
       <div className="gap-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
-        {list.map((item) => (
+        {data?.map((item) => (
           <Card
             key={item.menuId}
             isPressable
@@ -91,6 +83,11 @@ export default function SelectMenu() {
           </Card>
         ))}
       </div>
+      <AddMenuModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onOpenChange={onOpenChange}
+      />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { Button, Input } from "@nextui-org/react";
 import Modal from "./Modal";
 import { useForm } from "react-hook-form";
+import { userApi } from "@/libs/redux/api/userApi";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -25,13 +26,14 @@ export default function ChangePasswordModal({
     formState: { errors },
     setError,
   } = useForm<Form>();
+  const [trigger, { isLoading }] = userApi.useChangePasswordMutation();
 
   async function onValid({ currentPw, newPw, confirmNewPw }: Form) {
     if (newPw !== confirmNewPw) {
       setError("confirmNewPw", { message: "새 비밀번호가 일치하지 않습니다." });
       return;
     }
-    // 비밀번호 변경 API 호출
+    trigger({ currentPw, changepw: newPw }).unwrap().then(onClose);
   }
 
   const errorMessage =
@@ -50,7 +52,11 @@ export default function ChangePasswordModal({
       onClose={onClose}
       headerContent="비밀번호 변경"
       footerContent={
-        <Button color="primary" onClick={handleSubmit(onValid)}>
+        <Button
+          color="primary"
+          onClick={handleSubmit(onValid)}
+          isLoading={isLoading}
+        >
           수정
         </Button>
       }

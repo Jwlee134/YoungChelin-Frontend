@@ -1,5 +1,7 @@
 import { Button } from "@nextui-org/react";
 import Modal from "./Modal";
+import { userApi } from "@/libs/redux/api/userApi";
+import { setToken } from "@/libs/utils";
 
 interface QuitModalProps {
   isOpen: boolean;
@@ -12,8 +14,15 @@ export default function QuitModal({
   onOpenChange,
   onClose,
 }: QuitModalProps) {
+  const [trigger, { isLoading }] = userApi.useDeleteAccountMutation();
+  const { refetch } = userApi.useGetMeQuery();
+
   async function handleClick() {
-    // 탈퇴 API 호출
+    trigger().then(() => {
+      setToken(null);
+      refetch();
+      onClose();
+    });
   }
 
   return (
@@ -23,7 +32,7 @@ export default function QuitModal({
       onClose={onClose}
       headerContent="회원 탈퇴"
       footerContent={
-        <Button color="danger" onClick={handleClick}>
+        <Button color="danger" onClick={handleClick} isLoading={isLoading}>
           탈퇴
         </Button>
       }

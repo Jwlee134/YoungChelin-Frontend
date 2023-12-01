@@ -12,14 +12,18 @@ import Image from "next/image";
 import Link from "next/link";
 import LoginModal from "./modals/LoginModal";
 import SearchBar from "./SearchBar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useIntersectingStore from "@/hooks/useIntersectingStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { userApi } from "@/libs/redux/api/userApi";
+import { setToken } from "@/libs/utils";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const router = useRouter();
   const pathname = usePathname();
   const isIntersecting = useIntersectingStore((state) => state.isIntersecting);
+  const { data, refetch } = userApi.useGetMeQuery();
 
   return (
     <header className="w-full h-20 bg-white/70 fixed top-0 backdrop-blur-xl z-50">
@@ -59,11 +63,34 @@ export default function Header() {
         <div className="justify-self-end">
           <Dropdown>
             <DropdownTrigger>
-              <Avatar showFallback src="" className="cursor-pointer" />
+              <Avatar showFallback src={data?.url} className="cursor-pointer" />
             </DropdownTrigger>
             <DropdownMenu aria-label="Dropdown Actions">
-              <DropdownItem onClick={onOpen}>로그인</DropdownItem>
-              <DropdownItem>고객센터</DropdownItem>
+              {data?.userName ? (
+                <>
+                  <DropdownItem onClick={() => router.push("/my-page")}>
+                    마이페이지
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => router.push("/evaluation/select-restaurant")}
+                  >
+                    평가
+                  </DropdownItem>
+                  <DropdownItem onClick={() => router.push("/recommendations")}>
+                    추천
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => {
+                      setToken(null);
+                      refetch();
+                    }}
+                  >
+                    로그아웃
+                  </DropdownItem>
+                </>
+              ) : (
+                <DropdownItem onClick={onOpen}>로그인</DropdownItem>
+              )}
             </DropdownMenu>
           </Dropdown>
         </div>

@@ -27,6 +27,7 @@ export function getToken() {
   return localStorage.getItem("token:youngchelin");
 }
 
-export function setToken(token: string) {
-  localStorage.setItem("token:youngchelin", token);
+export function setToken(token: string | null) {
+  if (token) localStorage.setItem("token:youngchelin", token);
+  else localStorage.removeItem("token:youngchelin");
 }

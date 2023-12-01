@@ -2,7 +2,6 @@
 
 import MyPageCard from "@/components/MyPageCard";
 import ChangePasswordModal from "@/components/modals/ChangePasswordModal";
-import EditNicknameModal from "@/components/modals/EditNicknameModal";
 import EditProfilePictureModal from "@/components/modals/EditProfilePictureModal";
 import QuitModal from "@/components/modals/QuitModal";
 import { Avatar, useDisclosure } from "@nextui-org/react";
@@ -13,11 +12,6 @@ export default function MyPage() {
     isOpen: isEditProfilePictureOpen,
     onOpen: onEditProfilePictureOpen,
     onOpenChange: onEditProfilePictureOpenChange,
-  } = useDisclosure();
-  const {
-    isOpen: isEditNicknameOpen,
-    onOpen: onEditNicknameOpen,
-    onOpenChange: onEditNicknameOpenChange,
   } = useDisclosure();
   const {
     isOpen: isChangePasswordOpen,
@@ -38,7 +32,7 @@ export default function MyPage() {
         <div className="pl-10 text-4xl">
           안녕하세요,
           <br />
-          name님.
+          미식이님.
         </div>
       </div>
       <div className="pt-20">
@@ -59,18 +53,12 @@ export default function MyPage() {
             label="프로필 사진 수정"
             onPress={onEditProfilePictureOpen}
           />
-          <MyPageCard label="닉네임 수정" onPress={onEditNicknameOpen} />
           <MyPageCard label="비밀번호 변경" onPress={onChangePasswordOpen} />
           <MyPageCard label="회원 탈퇴" onPress={onQuitOpen} />
           <EditProfilePictureModal
             isOpen={isEditProfilePictureOpen}
             onOpenChange={onEditProfilePictureOpenChange}
             onClose={onEditProfilePictureOpenChange}
-          />
-          <EditNicknameModal
-            isOpen={isEditNicknameOpen}
-            onOpenChange={onEditNicknameOpenChange}
-            onClose={onEditNicknameOpenChange}
           />
           <ChangePasswordModal
             isOpen={isChangePasswordOpen}

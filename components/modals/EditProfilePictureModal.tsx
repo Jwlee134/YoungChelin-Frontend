@@ -2,6 +2,7 @@ import { Button, Image } from "@nextui-org/react";
 import Modal from "./Modal";
 import { ChangeEvent, useEffect, useState } from "react";
 import { getBase64 } from "@/libs/utils";
+import { userApi } from "@/libs/redux/api/userApi";
 
 interface EditProfilePictureModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export default function EditProfilePictureModal({
     file: null,
     url: null,
   });
+  const [trigger, { isLoading }] = userApi.useChangeProfilePictureMutation();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -36,7 +38,9 @@ export default function EditProfilePictureModal({
 
   async function handleClick() {
     if (!data.file) return;
-    // 프로필 사진 변경 로직
+    const formData = new FormData();
+    formData.append("file", data.file);
+    trigger(formData).unwrap().then(onClose);
   }
 
   return (
@@ -46,7 +50,7 @@ export default function EditProfilePictureModal({
       onClose={onClose}
       headerContent="프로필 사진 수정"
       footerContent={
-        <Button color="primary" onClick={handleClick}>
+        <Button color="primary" onClick={handleClick} isLoading={isLoading}>
           수정
         </Button>
       }

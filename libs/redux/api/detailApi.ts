@@ -6,7 +6,7 @@ export const detailApi = api.injectEndpoints({
       query: (menuId) => ({
         url: `/detail/${menuId}`,
       }),
-      providesTags: (result, error, id) => [{ type: "Dishes", id }],
+      providesTags: (result, error, id) => [{ type: "Dish", id }],
     }),
   }),
 });
