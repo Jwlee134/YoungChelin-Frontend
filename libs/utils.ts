@@ -24,7 +24,8 @@ export async function getFileFromBase64(id: number, url: string) {
 }
 
 export function getToken() {
-  return localStorage.getItem("token:youngchelin");
+  const token = localStorage.getItem("token:youngchelin");
+  return token;
 }
 
 export function setToken(token: string | null) {

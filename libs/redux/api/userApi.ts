@@ -1,3 +1,4 @@
+import { setToken } from "@/libs/utils";
 import { api } from ".";
 
 export const userApi = api.injectEndpoints({
@@ -32,7 +33,13 @@ export const userApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Profile" }],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          setToken(data.token);
+          dispatch(api.util.invalidateTags([{ type: "Profile" }]));
+        } catch {}
+      },
     }),
 
     findId: build.mutation<string, EmailDto>({

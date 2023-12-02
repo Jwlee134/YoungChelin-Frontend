@@ -64,12 +64,7 @@ export default function LoginModal({
 
     switch (mode) {
       case Mode.LOGIN:
-        login({ userName: username, password })
-          .unwrap()
-          .then(({ token }) => {
-            setToken(token);
-            onClose();
-          });
+        login({ userName: username, password }).unwrap().then(onClose);
         break;
       case Mode.SIGN_UP:
         sendEmail({ email: combinedEmail })
