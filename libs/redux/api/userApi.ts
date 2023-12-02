@@ -20,7 +20,7 @@ export const userApi = api.injectEndpoints({
 
     verifyEmail: build.mutation<void, EmailDto>({
       query: (body) => ({
-        url: "register/verify-email",
+        url: "/register/verify-email",
         method: "POST",
         body,
       }),
@@ -32,6 +32,7 @@ export const userApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: [{ type: "Profile" }],
     }),
 
     findId: build.mutation<string, EmailDto>({
