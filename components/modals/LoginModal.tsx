@@ -59,12 +59,12 @@ export default function LoginModal({
   const [findPw, { isLoading: isFindingPw }] = userApi.useFindPwMutation();
   const [foundUsername, setFoundUsername] = useState("");
 
-  function onValid({ email, emailAddress, password }: LoginForm) {
+  function onValid({ email, emailAddress, password, username }: LoginForm) {
     const combinedEmail = `${email}@${emailAddress}`;
 
     switch (mode) {
       case Mode.LOGIN:
-        login({ userName: combinedEmail, password })
+        login({ userName: username, password })
           .unwrap()
           .then(({ token }) => {
             setToken(token);
