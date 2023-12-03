@@ -34,12 +34,12 @@ interface EvaluationItemState {
   mode: EvaluationItems | null;
   id: number;
   name: string;
-  flavor: number | null;
-  mood: number[];
-  price: number | null;
-  cleanliness: number | null;
-  plating: number | null;
-  service: number | null;
+  flavor: string | null;
+  mood: string[];
+  price: string | null;
+  cleanliness: string | null;
+  plating: string | null;
+  service: string | null;
   fileUrl: string | null;
 }
 
@@ -115,25 +115,25 @@ export const evaluationSlice = createSlice({
         payload: { dishId, v, type },
       }: PayloadAction<{
         dishId: number;
-        v: number | null;
+        v: string | null;
         type: EvaluationItems;
       }>
     ) => {
       const idx = state.evaluationItems.findIndex((item) => item.id === dishId);
       if (Array.isArray(state.evaluationItems[idx][type]) && v !== null) {
         // 분위기 항목
-        if ((state.evaluationItems[idx][type] as number[]).includes(v)) {
-          (state.evaluationItems[idx][type] as number[]) = (
-            state.evaluationItems[idx][type] as number[]
+        if ((state.evaluationItems[idx][type] as string[]).includes(v)) {
+          (state.evaluationItems[idx][type] as string[]) = (
+            state.evaluationItems[idx][type] as string[]
           ).filter((item) => item !== v);
         } else {
-          (state.evaluationItems[idx][type] as number[]).push(v);
+          (state.evaluationItems[idx][type] as string[]).push(v);
         }
       } else {
         // 나머지 항목
         if (state.evaluationItems[idx][type] === v)
-          (state.evaluationItems[idx][type] as number | null) = null;
-        else (state.evaluationItems[idx][type] as number | null) = v;
+          (state.evaluationItems[idx][type] as string | null) = null;
+        else (state.evaluationItems[idx][type] as string | null) = v;
       }
     },
     uploadPhoto: (

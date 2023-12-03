@@ -8,10 +8,13 @@ import { shallowEqual } from "react-redux";
 
 interface Props {
   item: {
-    value: number;
+    id: string;
     description: string;
     src: string;
-    pos: { y: number; x: number };
+    pos: {
+      y: number;
+      x: number;
+    };
   };
   type: EvaluationItems;
   onClick: () => void;
@@ -27,14 +30,14 @@ export default function EvaluationItem({ item, type, onClick }: Props) {
   );
 
   const condition = Array.isArray(items[Math.floor(cursor / 2)][type])
-    ? (items[Math.floor(cursor / 2)][type] as number[]).includes(item.value)
-    : items[Math.floor(cursor / 2)][type] === item.value;
+    ? (items[Math.floor(cursor / 2)][type] as string[]).includes(item.id)
+    : items[Math.floor(cursor / 2)][type] === item.id;
 
   return (
     <Tooltip
       showArrow
       closeDelay={0}
-      content={evaluationItems[type].data[item.value].description}
+      content={evaluationItems[type].data[item.id].description}
     >
       <motion.div
         initial={{
@@ -56,8 +59,8 @@ export default function EvaluationItem({ item, type, onClick }: Props) {
         onClick={onClick}
       >
         <Image
-          src={evaluationItems[type].data[item.value].src}
-          alt={evaluationItems[type].data[item.value].description}
+          src={evaluationItems[type].data[item.id].src}
+          alt={evaluationItems[type].data[item.id].description}
           width={type === EvaluationItems.FLAVOR ? 40 : 32}
           height={type === EvaluationItems.FLAVOR ? 40 : 32}
         />

@@ -1,0 +1,58 @@
+import { evaluationItems } from "@/libs/constants";
+import { EvaluationItems } from "@/libs/redux/slices/evaluationSlice";
+import { cls } from "@/libs/utils";
+import { Image, Tooltip } from "@nextui-org/react";
+
+interface Props {
+  data: ResultDto;
+  fullWidth?: boolean;
+}
+
+export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
+  return (
+    <div
+      className={cls(
+        "flex gap-1 items-center flex-wrap",
+        fullWidth ? "" : "max-w-[156px]"
+      )}
+    >
+      {Object.keys(data).map((evaluatedKey, i) => {
+        const keyWithData = evaluationItems[evaluatedKey as EvaluationItems];
+        const v = Object.values(data)[i] as string;
+        if (evaluatedKey === EvaluationItems.MOOD) {
+          return data[evaluatedKey]
+            .map((mood) => {
+              return (
+                <Tooltip
+                  key={mood}
+                  content={keyWithData.data[mood].description}
+                  closeDelay={0}
+                >
+                  <Image
+                    width={28}
+                    src={keyWithData.data[mood].src}
+                    alt={keyWithData.data[mood].description}
+                  />
+                </Tooltip>
+              );
+            })
+            .flat();
+        }
+        return (
+          <Tooltip
+            key={evaluatedKey}
+            content={keyWithData.data[v].description}
+            closeDelay={0}
+          >
+            <Image
+              width={28}
+              height={28}
+              src={keyWithData.data[v].src}
+              alt={keyWithData.data[v].description}
+            />
+          </Tooltip>
+        );
+      })}
+    </div>
+  );
+}

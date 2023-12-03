@@ -1,9 +1,8 @@
-import { evaluationItems } from "@/libs/constants";
-import { EvaluationItems } from "@/libs/redux/slices/evaluationSlice";
-import { Card, CardBody, Image, Tooltip } from "@nextui-org/react";
+import { Card, CardBody, Image } from "@nextui-org/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ForwardedRef, forwardRef, memo } from "react";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import ResultDtoMapper from "./ResultDtoMapper";
 
 interface Props {
   item: RestaurantEvaluateDto;
@@ -34,43 +33,7 @@ function EvaluationCard(
           />
           <div className="grow flex flex-col justify-between">
             <div className="font-bold mb-1">{item.menuName}</div>
-            <div className="flex items-center gap-1 flex-wrap">
-              {Object.keys(item.evaluate).map((evaluatedKey) => {
-                const keyWithData =
-                  evaluationItems[evaluatedKey as EvaluationItems];
-                if (evaluatedKey === EvaluationItems.MOOD) {
-                  return item.evaluate[evaluatedKey]
-                    .map((mood) => {
-                      const v = keyWithData.data.find(
-                        (data) => data.value === parseInt(mood)
-                      );
-                      return (
-                        <Tooltip
-                          key={mood}
-                          content={v?.description}
-                          closeDelay={0}
-                        >
-                          <Image width={28} src={v?.src} alt={v?.description} />
-                        </Tooltip>
-                      );
-                    })
-                    .flat();
-                }
-                const v = keyWithData.data.find(
-                  (data) =>
-                    data.value + "" === (item.evaluate[evaluatedKey] as string)
-                );
-                return (
-                  <Tooltip
-                    key={evaluatedKey}
-                    content={v?.description}
-                    closeDelay={0}
-                  >
-                    <Image width={28} src={v?.src} alt={v?.description} />
-                  </Tooltip>
-                );
-              })}
-            </div>
+            <ResultDtoMapper data={item.evaluate} fullWidth />
           </div>
         </div>
       </CardBody>

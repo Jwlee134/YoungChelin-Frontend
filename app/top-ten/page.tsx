@@ -1,7 +1,7 @@
 "use client";
 
+import ResultDtoMapper from "@/components/ResultDtoMapper";
 import AddTopTenModal from "@/components/modals/AddTopTenModal";
-import { evaluationItems } from "@/libs/constants";
 import { userApi } from "@/libs/redux/api/userApi";
 import {
   Button,
@@ -49,25 +49,15 @@ export default function TopTen() {
                       src={data?.[idx].url}
                       alt="썸네일"
                       radius="none"
-                      className="object-cover aspect-[6/5]"
+                      className="object-cover aspect-[5/4] w-full h-full"
+                      classNames={{ wrapper: "w-full h-full" }}
                     />
                   </CardBody>
-                  <CardFooter className="flex justify-between items-center aspect-[6/1] shrink-0">
+                  <CardFooter className="flex justify-between items-center aspect-[5/1] shrink-0">
                     <div className="w-full font-bold text-lg text-ellipsis whitespace-nowrap overflow-hidden">
-                      카이센동, 영남동
+                      {data?.[idx].menuName}
                     </div>
-                    <div>
-                      <Image
-                        width={70}
-                        src={
-                          evaluationItems.flavor.data.find(
-                            (item) =>
-                              item.value + "" === data?.[idx].evaluate.flavor
-                          )?.src
-                        }
-                        alt="맛 평가 항목"
-                      />
-                    </div>
+                    {data && <ResultDtoMapper data={data?.[idx].evaluate} />}
                   </CardFooter>
                   {isEdit && (
                     <Button

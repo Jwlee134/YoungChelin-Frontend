@@ -1,8 +1,7 @@
-import { evaluationItems } from "@/libs/constants";
-import { EvaluationItems } from "@/libs/redux/slices/evaluationSlice";
-import { Card, CardBody, CardFooter, Image, Tooltip } from "@nextui-org/react";
+import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import Link from "next/link";
 import { ForwardedRef, forwardRef, memo } from "react";
+import ResultDtoMapper from "./ResultDtoMapper";
 
 interface Props {
   item: RestaurantEvaluateDto;
@@ -11,59 +10,30 @@ interface Props {
 function HomeCard({ item }: Props, ref: ForwardedRef<HTMLDivElement>) {
   return (
     <Card
-      key={item.menuId}
-      className="relative"
+      className="aspect-square"
       as={Link}
       href={`/dishes/${item.menuId}`}
       ref={item.last ? ref : undefined}
     >
-      <CardBody className="p-0 flex-grow-0">
+      <CardBody className="p-0">
         <Image
           shadow="sm"
           radius="none"
           alt="썸네일"
-          className="w-full object-cover aspect-[4/3]"
+          className="w-full object-cover aspect-[4/3] h-full"
+          classNames={{
+            wrapper: "w-full h-full",
+            zoomedWrapper: "w-full h-full",
+          }}
           src={item.url}
           isZoomed
         />
       </CardBody>
-      <CardFooter className="text-small flex justify-between items-center">
-        <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis">
+      <CardFooter className="text-small flex justify-between aspect-[4/1] items-center">
+        <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis ">
           {item.menuName}
         </div>
-        <div className="flex items-center gap-1 flex-wrap">
-          {Object.keys(item.evaluate).map((evaluatedKey) => {
-            const keyWithData =
-              evaluationItems[evaluatedKey as EvaluationItems];
-            if (evaluatedKey === EvaluationItems.MOOD) {
-              return item.evaluate[evaluatedKey]
-                .map((mood) => {
-                  const v = keyWithData.data.find(
-                    (data) => data.value === parseInt(mood)
-                  );
-                  return (
-                    <Tooltip key={mood} content={v?.description} closeDelay={0}>
-                      <Image width={28} src={v?.src} alt={v?.description} />
-                    </Tooltip>
-                  );
-                })
-                .flat();
-            }
-            const v = keyWithData.data.find(
-              (data) =>
-                data.value + "" === (item.evaluate[evaluatedKey] as string)
-            );
-            return (
-              <Tooltip
-                key={evaluatedKey}
-                content={v?.description}
-                closeDelay={0}
-              >
-                <Image width={28} src={v?.src} alt={v?.description} />
-              </Tooltip>
-            );
-          })}
-        </div>
+        <ResultDtoMapper data={item.evaluate} />
       </CardFooter>
     </Card>
   );

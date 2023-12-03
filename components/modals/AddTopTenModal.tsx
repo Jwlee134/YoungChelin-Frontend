@@ -1,10 +1,8 @@
-import { Button, Card, CardBody, Image, Tooltip } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import Modal from "./Modal";
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useInView } from "framer-motion";
-import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import { useInView } from "framer-motion";
 import { userApi } from "@/libs/redux/api/userApi";
-import { evaluationItems } from "@/libs/constants";
 import EvaluationCard from "../EvaluationCard";
 
 interface AddTopTenModalProps {

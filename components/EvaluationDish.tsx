@@ -51,22 +51,24 @@ export default function EvaluationDish() {
             {evaluationItems[EvaluationItems.FLAVOR].label}
             <AnimatePresence>
               {items[evaluationIdx].mode === EvaluationItems.FLAVOR &&
-                evaluationItems[EvaluationItems.FLAVOR].data.map((item) => (
-                  <EvaluationItem
-                    key={item.value}
-                    item={item}
-                    type={EvaluationItems.FLAVOR}
-                    onClick={() =>
-                      dispatch(
-                        evaluationActions.evaluateDish({
-                          dishId: items[evaluationIdx].id,
-                          v: item.value,
-                          type: EvaluationItems.FLAVOR,
-                        })
-                      )
-                    }
-                  />
-                ))}
+                Object.values(evaluationItems[EvaluationItems.FLAVOR].data).map(
+                  (item) => (
+                    <EvaluationItem
+                      key={item.id}
+                      item={item}
+                      type={EvaluationItems.FLAVOR}
+                      onClick={() =>
+                        dispatch(
+                          evaluationActions.evaluateDish({
+                            dishId: items[evaluationIdx].id,
+                            v: item.id,
+                            type: EvaluationItems.FLAVOR,
+                          })
+                        )
+                      }
+                    />
+                  )
+                )}
             </AnimatePresence>
           </div>
           <div className="absolute -translate-y-[150px]">
@@ -84,22 +86,24 @@ export default function EvaluationDish() {
               </div>
               <AnimatePresence>
                 {items[evaluationIdx].mode === EvaluationItems.MOOD &&
-                  evaluationItems[EvaluationItems.MOOD].data.map((item) => (
-                    <EvaluationItem
-                      key={item.value}
-                      item={item}
-                      type={EvaluationItems.MOOD}
-                      onClick={() =>
-                        dispatch(
-                          evaluationActions.evaluateDish({
-                            dishId: items[evaluationIdx].id,
-                            v: item.value,
-                            type: EvaluationItems.MOOD,
-                          })
-                        )
-                      }
-                    />
-                  ))}
+                  Object.values(evaluationItems[EvaluationItems.MOOD].data).map(
+                    (item) => (
+                      <EvaluationItem
+                        key={item.id}
+                        item={item}
+                        type={EvaluationItems.MOOD}
+                        onClick={() =>
+                          dispatch(
+                            evaluationActions.evaluateDish({
+                              dishId: items[evaluationIdx].id,
+                              v: item.id,
+                              type: EvaluationItems.MOOD,
+                            })
+                          )
+                        }
+                      />
+                    )
+                  )}
               </AnimatePresence>
             </div>
           </div>
@@ -118,24 +122,24 @@ export default function EvaluationDish() {
               </div>
               <AnimatePresence>
                 {items[evaluationIdx].mode === EvaluationItems.CLEANLINESS &&
-                  evaluationItems[EvaluationItems.CLEANLINESS].data.map(
-                    (item) => (
-                      <EvaluationItem
-                        key={item.value}
-                        item={item}
-                        type={EvaluationItems.CLEANLINESS}
-                        onClick={() =>
-                          dispatch(
-                            evaluationActions.evaluateDish({
-                              dishId: items[evaluationIdx].id,
-                              v: item.value,
-                              type: EvaluationItems.CLEANLINESS,
-                            })
-                          )
-                        }
-                      />
-                    )
-                  )}
+                  Object.values(
+                    evaluationItems[EvaluationItems.CLEANLINESS].data
+                  ).map((item) => (
+                    <EvaluationItem
+                      key={item.id}
+                      item={item}
+                      type={EvaluationItems.CLEANLINESS}
+                      onClick={() =>
+                        dispatch(
+                          evaluationActions.evaluateDish({
+                            dishId: items[evaluationIdx].id,
+                            v: item.id,
+                            type: EvaluationItems.CLEANLINESS,
+                          })
+                        )
+                      }
+                    />
+                  ))}
               </AnimatePresence>
             </div>
           </div>
@@ -169,16 +173,18 @@ export default function EvaluationDish() {
               </div>
               <AnimatePresence>
                 {items[evaluationIdx].mode === EvaluationItems.PLATING &&
-                  evaluationItems[EvaluationItems.PLATING].data.map((item) => (
+                  Object.values(
+                    evaluationItems[EvaluationItems.PLATING].data
+                  ).map((item) => (
                     <EvaluationItem
-                      key={item.value}
+                      key={item.id}
                       item={item}
                       type={EvaluationItems.PLATING}
                       onClick={() =>
                         dispatch(
                           evaluationActions.evaluateDish({
                             dishId: items[evaluationIdx].id,
-                            v: item.value,
+                            v: item.id,
                             type: EvaluationItems.PLATING,
                           })
                         )
@@ -203,16 +209,18 @@ export default function EvaluationDish() {
               </div>
               <AnimatePresence>
                 {items[evaluationIdx].mode === EvaluationItems.SERVICE &&
-                  evaluationItems[EvaluationItems.SERVICE].data.map((item) => (
+                  Object.values(
+                    evaluationItems[EvaluationItems.SERVICE].data
+                  ).map((item) => (
                     <EvaluationItem
-                      key={item.value}
+                      key={item.id}
                       item={item}
                       type={EvaluationItems.SERVICE}
                       onClick={() =>
                         dispatch(
                           evaluationActions.evaluateDish({
                             dishId: items[evaluationIdx].id,
-                            v: item.value,
+                            v: item.id,
                             type: EvaluationItems.SERVICE,
                           })
                         )

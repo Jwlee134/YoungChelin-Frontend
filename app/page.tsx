@@ -26,10 +26,10 @@ export default function Home() {
         <HomeLogo />
       </div>
       <SearchBar />
-      <div className="pt-[calc(70vh-280px)] px-6 pb-12">
-        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+      <div className="pt-[calc(70vh-280px)] px-6 pb-12 w-full">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full">
           {data?.map((item) => (
-            <HomeCard item={item} ref={ref} key={item.menuId} />
+            <HomeCard item={item} ref={ref} key={item.id} />
           ))}
         </div>
       </div>
