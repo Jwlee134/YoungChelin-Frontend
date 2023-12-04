@@ -85,6 +85,9 @@ export default function Header() {
                 <DropdownItem key="recommendations" href="/recommendations">
                   추천
                 </DropdownItem>
+                <DropdownItem key="topten" href="/top-ten">
+                  맛식 Top 10
+                </DropdownItem>
                 <DropdownItem
                   key="logout"
                   onClick={() => {
