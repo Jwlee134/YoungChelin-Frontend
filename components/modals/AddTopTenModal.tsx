@@ -75,13 +75,13 @@ export default function AddTopTenModal({
       size="xl"
     >
       <div className="max-h-[50vh] overflow-y-auto space-y-3 p-3">
-        {data?.map((item) => (
+        {data?.map((item, i) => (
           <EvaluationCard
             key={item.menuId}
             item={item}
             handlePress={(id) => handlePress(id)}
             selectedId={selectedId}
-            ref={item.last ? ref : undefined}
+            ref={i === data.length - 1 && !item.last ? ref : undefined}
           />
         ))}
       </div>

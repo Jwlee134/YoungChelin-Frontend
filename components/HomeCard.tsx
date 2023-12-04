@@ -13,7 +13,7 @@ function HomeCard({ item }: Props, ref: ForwardedRef<HTMLDivElement>) {
       className="aspect-square"
       as={Link}
       href={`/dishes/${item.menuId}`}
-      ref={item.last ? ref : undefined}
+      ref={ref}
     >
       <CardBody className="p-0">
         <Image

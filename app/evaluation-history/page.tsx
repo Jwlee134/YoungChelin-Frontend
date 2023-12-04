@@ -22,11 +22,11 @@ export default function EvaluationHistoryPage() {
     <div className="pt-12 px-6">
       <h1 className="text-xl font-bold mb-4">평가 내역</h1>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-        {data?.map((item) => (
+        {data?.map((item, i) => (
           <EvaluationCard
             key={item.menuId}
             item={item}
-            ref={item.last ? ref : undefined}
+            ref={i === data.length - 1 && !item.last ? ref : undefined}
           />
         ))}
       </div>
