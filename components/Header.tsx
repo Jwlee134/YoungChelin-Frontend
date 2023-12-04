@@ -24,7 +24,7 @@ export default function Header() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const pathname = usePathname();
   const isIntersecting = useIntersectingStore((state) => state.isIntersecting);
-  const { data } = userApi.useGetMeQuery();
+  const { data, isError } = userApi.useGetMeQuery();
   const dispatch = useDispatch();
 
   return (
@@ -65,9 +65,13 @@ export default function Header() {
         <div className="justify-self-end">
           <Dropdown>
             <DropdownTrigger>
-              <Avatar showFallback src={data?.url} className="cursor-pointer" />
+              <Avatar
+                showFallback
+                src={!isError ? data?.url : ""}
+                className="cursor-pointer"
+              />
             </DropdownTrigger>
-            {data?.userName ? (
+            {!isError ? (
               <DropdownMenu aria-label="Dropdown Actions">
                 <DropdownItem key="my-page" href="/my-page">
                   마이페이지

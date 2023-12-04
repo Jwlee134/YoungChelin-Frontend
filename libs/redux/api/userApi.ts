@@ -64,7 +64,7 @@ export const userApi = api.injectEndpoints({
       }),
     }),
 
-    getMe: build.query<ProfileDto | null, void>({
+    getMe: build.query<ProfileDto, void>({
       query: () => ({
         url: "/me",
       }),
