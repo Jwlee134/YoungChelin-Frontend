@@ -172,7 +172,7 @@ export default function Search() {
           </Button>
         </div>
       </div>
-      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 py-12">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 py-12">
         {data?.map((item) => (
           <HomeCard item={item} key={item.menuId} />
         ))}

@@ -156,6 +156,27 @@ export default function EvaluationDish() {
               >
                 {evaluationItems[EvaluationItems.PRICE].label}
               </div>
+              <AnimatePresence>
+                {items[evaluationIdx].mode === EvaluationItems.PRICE &&
+                  Object.values(
+                    evaluationItems[EvaluationItems.PRICE].data
+                  ).map((item) => (
+                    <EvaluationItem
+                      key={item.id}
+                      item={item}
+                      type={EvaluationItems.PRICE}
+                      onClick={() =>
+                        dispatch(
+                          evaluationActions.evaluateDish({
+                            dishId: items[evaluationIdx].id,
+                            v: item.id,
+                            type: EvaluationItems.PRICE,
+                          })
+                        )
+                      }
+                    />
+                  ))}
+              </AnimatePresence>
             </div>
           </div>
           <div className="absolute translate-y-[121.35px] -translate-x-[88.05px]">

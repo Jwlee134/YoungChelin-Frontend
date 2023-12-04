@@ -50,9 +50,9 @@ export const evaluateApi = api.injectEndpoints({
      * @param resultDto - ResultDto
      * @param file - File
      */
-    postEvaluation: build.mutation<void, { body: FormData; menuId: string }>({
-      query: ({ body, menuId }) => ({
-        url: `/evaluate/menu/survey/${menuId}`,
+    postEvaluation: build.mutation<void, FormData>({
+      query: (body) => ({
+        url: `/evaluate/menu/survey`,
         method: "POST",
         body,
       }),

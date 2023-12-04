@@ -61,7 +61,7 @@ export default function EvaluationFooter() {
                 "resultDto",
                 JSON.stringify({
                   flavor: item.flavor,
-                  mood: item.mode,
+                  mood: item.mood,
                   service: item.service,
                   price: item.price,
                   cleanliness: item.cleanliness,
@@ -69,7 +69,7 @@ export default function EvaluationFooter() {
                 })
               );
               formData.append("file", item.file);
-              postEvaluation({ menuId: item.id + "", body: formData });
+              postEvaluation(formData);
             })
           ).then(() => {
             router.push("/");
