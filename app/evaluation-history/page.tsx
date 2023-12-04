@@ -9,23 +9,35 @@ export default function EvaluationHistoryPage() {
   const [id, setId] = useState(0);
   const { data } = userApi.useGetEvaluationHistoryQuery({ id });
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref);
 
   useEffect(() => {
-    if (!inView || !data) return;
-    if (data.length && inView && !data[data.length - 1].last) {
-      setId(parseInt(data[data.length - 1].id));
-    }
-  }, [inView, data]);
+    if (!data || !ref.current) return;
+    let observerRefValue: HTMLDivElement | null = null;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !data[data.length - 1].last)
+        setId(parseInt(data[data.length - 1].id));
+    });
+    observer.observe(ref.current);
+    observerRefValue = ref.current;
+
+    return () => {
+      if (observerRefValue) observer.unobserve(observerRefValue);
+    };
+  }, [data]);
 
   return (
     <div className="pt-12 px-6">
       <h1 className="text-xl font-bold mb-4">평가 내역</h1>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         {data?.map((item, i) => (
-          <EvaluationCard key={item.menuId} item={item} />
+          <EvaluationCard
+            key={item.menuId}
+            item={item}
+            ref={i === data.length - 1 ? ref : undefined}
+          />
         ))}
-        <div ref={ref} />
+        =
       </div>
     </div>
   );

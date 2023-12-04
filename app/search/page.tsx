@@ -13,7 +13,6 @@ import {
   DropdownTrigger,
   Image,
 } from "@nextui-org/react";
-import { useInView } from "framer-motion";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import queryString, { ParsedQuery } from "query-string";
 import { Key, useEffect, useRef, useState } from "react";
@@ -32,14 +31,23 @@ export default function Search() {
   const [getByFilter, { data: filterData, isLoading: isFiltering }] =
     homeApi.useLazyGetByFilterQuery();
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref);
   const data = Object.keys(initialData).length > 1 ? filterData : keywordData;
 
   useEffect(() => {
-    if (!inView || !data) return;
-    if (data.length && inView && !data[data.length - 1].last)
-      setId(parseInt(data[data.length - 1].id));
-  }, [inView, data]);
+    if (!data || !ref.current) return;
+    let observerRefValue: HTMLDivElement | null = null;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !data[data.length - 1].last)
+        setId(parseInt(data[data.length - 1].id));
+    });
+    observer.observe(ref.current);
+    observerRefValue = ref.current;
+
+    return () => {
+      if (observerRefValue) observer.unobserve(observerRefValue);
+    };
+  }, [data]);
 
   function handleMenuClick(key: Key, i: number) {
     const label = Object.keys(evaluationItems)[i];
@@ -173,10 +181,13 @@ export default function Search() {
         </div>
       </div>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 py-12">
-        {data?.map((item) => (
-          <HomeCard item={item} key={item.menuId} />
+        {data?.map((item, i) => (
+          <HomeCard
+            item={item}
+            key={item.menuId}
+            ref={i === data.length - 1 ? ref : undefined}
+          />
         ))}
-        <div ref={ref} />
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import { Button } from "@nextui-org/react";
 import Modal from "./Modal";
 import { useEffect, useRef, useState } from "react";
-import { useInView } from "framer-motion";
 import { userApi } from "@/libs/redux/api/userApi";
 import EvaluationCard from "../EvaluationCard";
 
@@ -28,14 +27,22 @@ export default function AddTopTenModal({
     { skip: !isOpen }
   );
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref);
 
   useEffect(() => {
-    if (!inView || !data) return;
-    if (data.length && inView && !data[data.length - 1].last) {
-      setId(parseInt(data[data.length - 1].id));
-    }
-  }, [inView, data]);
+    if (!data || !ref.current) return;
+    let observerRefValue: HTMLDivElement | null = null;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !data[data.length - 1].last)
+        setId(parseInt(data[data.length - 1].id));
+    });
+    observer.observe(ref.current);
+    observerRefValue = ref.current;
+
+    return () => {
+      if (observerRefValue) observer.unobserve(observerRefValue);
+    };
+  }, [data]);
 
   async function handleClick() {
     if (!topTen || selectedIdx === null) return;
@@ -81,9 +88,9 @@ export default function AddTopTenModal({
             item={item}
             handlePress={(id) => handlePress(id)}
             selectedId={selectedId}
+            ref={i === data.length - 1 ? ref : undefined}
           />
         ))}
-        <div ref={ref} />
       </div>
     </Modal>
   );
