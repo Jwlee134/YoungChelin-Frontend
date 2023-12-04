@@ -13,7 +13,7 @@ export default function EvaluationHistoryPage() {
 
   useEffect(() => {
     if (!inView || !data) return;
-    if (data.length && inView) {
+    if (data.length && inView && !data[data.length - 1].last) {
       setId(parseInt(data[data.length - 1].id));
     }
   }, [inView, data]);

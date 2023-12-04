@@ -37,7 +37,8 @@ export default function Search() {
 
   useEffect(() => {
     if (!inView || !data) return;
-    if (data.length && inView) setId(parseInt(data[data.length - 1].id));
+    if (data.length && inView && !data[data.length - 1].last)
+      setId(parseInt(data[data.length - 1].id));
   }, [inView, data]);
 
   function handleMenuClick(key: Key, i: number) {
