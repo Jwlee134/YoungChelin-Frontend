@@ -1,13 +1,10 @@
 "use client";
 
-import ResultDtoMapper from "@/components/ResultDtoMapper";
+import HomeCard from "@/components/HomeCard";
 import { evaluationItems } from "@/libs/constants";
 import { homeApi } from "@/libs/redux/api/homeApi";
 import {
   Button,
-  Card,
-  CardBody,
-  CardFooter,
   Checkbox,
   Divider,
   Dropdown,
@@ -17,7 +14,6 @@ import {
   Image,
 } from "@nextui-org/react";
 import { useInView } from "framer-motion";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import queryString, { ParsedQuery } from "query-string";
 import { Key, useEffect, useRef, useState } from "react";
@@ -28,9 +24,8 @@ export default function Search() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const keyword = searchParams.get("keyword");
-  const [parsed, setParsed] = useState<ParsedQuery<string>>(
-    queryString.parse(searchParams.toString())
-  );
+  const initialData = queryString.parse(searchParams.toString());
+  const [parsed, setParsed] = useState<ParsedQuery<string>>(initialData);
   const [id, setId] = useState(0);
   const [getByKeyword, { data: keywordData }] =
     homeApi.useLazyGetByKeywordQuery();
@@ -38,7 +33,7 @@ export default function Search() {
     homeApi.useLazyGetByFilterQuery();
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
-  const data = Object.keys(parsed).length > 1 ? filterData : keywordData;
+  const data = Object.keys(initialData).length > 1 ? filterData : keywordData;
 
   useEffect(() => {
     if (!inView || !data) return;
@@ -177,32 +172,10 @@ export default function Search() {
         </div>
       </div>
       <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 py-12">
-        {data?.map((item, i) => (
-          <Card
-            key={item.menuId}
-            className="relative"
-            as={Link}
-            href={`/dishes/${item.menuId}`}
-            ref={i === data.length - 1 ? ref : undefined}
-          >
-            <CardBody className="p-0">
-              <Image
-                shadow="sm"
-                radius="none"
-                alt="썸네일"
-                className="w-full object-cover aspect-[4/3]"
-                src={item.url}
-                isZoomed
-              />
-            </CardBody>
-            <CardFooter className="text-small flex justify-between items-center">
-              <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis">
-                {item.menuName}
-              </div>
-              <ResultDtoMapper data={item.evaluate} />
-            </CardFooter>
-          </Card>
+        {data?.map((item) => (
+          <HomeCard item={item} key={item.menuId} />
         ))}
+        <div ref={ref} />
       </div>
     </div>
   );
