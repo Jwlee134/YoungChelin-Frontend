@@ -58,11 +58,16 @@ export default function EvaluationFooter() {
               formData.append("menuId", item.id + "");
               formData.append("restaurantId", restaurant.id + "");
               formData.append("flavor", item.flavor + "");
-              formData.append("mood", item.mood + "");
-              formData.append("service", item.service + "");
-              formData.append("price", item.price + "");
-              formData.append("cleanliness", item.cleanliness + "");
-              formData.append("plating", item.plating + "");
+              if (item.mode !== null)
+                formData.append("mood", item.mood.join(","));
+              if (item.service !== null)
+                formData.append("service", item.service + "");
+              if (item.price !== null)
+                formData.append("price", item.price + "");
+              if (item.cleanliness !== null)
+                formData.append("cleanliness", item.cleanliness + "");
+              if (item.plating !== null)
+                formData.append("plating", item.plating + "");
               formData.append("file", item.file);
               postEvaluation(formData);
             })
