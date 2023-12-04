@@ -23,7 +23,10 @@ export default function AddTopTenModal({
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [trigger, { isLoading }] = userApi.usePostTopTenMutation();
   const [id, setId] = useState(0);
-  const { data } = userApi.useGetEvaluationHistoryQuery({ id });
+  const { data } = userApi.useGetEvaluationHistoryQuery(
+    { id },
+    { skip: !isOpen }
+  );
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
 

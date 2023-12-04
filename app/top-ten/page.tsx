@@ -11,7 +11,7 @@ import {
   Image,
   useDisclosure,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { HiOutlineTrash } from "react-icons/hi2";
 
 export default function TopTen() {
@@ -41,9 +41,9 @@ export default function TopTen() {
         {Array.from({ length: 10 }, (v, i) => {
           const idx = data?.findIndex((item) => item.rank === i + 1 + "");
           return (
-            <>
+            <Fragment key={i}>
               {idx !== undefined && idx !== -1 ? (
-                <Card key={data?.[idx].menuId} className="aspect-square">
+                <Card className="aspect-square">
                   <CardBody className="p-0">
                     <Image
                       src={data?.[idx].url}
@@ -71,14 +71,13 @@ export default function TopTen() {
                 </Card>
               ) : (
                 <div
-                  key={i}
                   className="border border-dashed border-gray-400 rounded-xl aspect-square flex justify-center items-center cursor-pointer"
                   onClick={() => handleClick(i)}
                 >
                   <span className="text-5xl text-gray-300">{i + 1}</span>
                 </div>
               )}
-            </>
+            </Fragment>
           );
         })}
       </div>
