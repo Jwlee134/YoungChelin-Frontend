@@ -13,25 +13,32 @@ import {
   DropdownTrigger,
   Image,
 } from "@nextui-org/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import queryString, { ParsedQuery } from "query-string";
 import { Key, useEffect, useRef, useState } from "react";
 import { IoRefresh } from "react-icons/io5";
 
 export default function Search() {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const keyword = searchParams.get("keyword");
   const initialData = queryString.parse(searchParams.toString());
   const [parsed, setParsed] = useState<ParsedQuery<string>>(initialData);
   const [id, setId] = useState(0);
-  const [getByKeyword, { data: keywordData }] =
-    homeApi.useLazyGetByKeywordQuery();
-  const [getByFilter, { data: filterData, isLoading: isFiltering }] =
-    homeApi.useLazyGetByFilterQuery();
+
+  const isFilterMode = Object.keys(initialData).length > 1;
+  const { data: keywordData } = homeApi.useGetByKeywordQuery(
+    { qs: searchParams.toString(), id },
+    { skip: isFilterMode }
+  );
+  const { data: filteredData, isLoading: isFiltering } =
+    homeApi.useGetByFilterQuery(
+      { qs: searchParams.toString(), id },
+      { skip: !isFilterMode }
+    );
+  const data = isFilterMode ? filteredData : keywordData;
+
   const ref = useRef<HTMLDivElement>(null);
-  const [data, setData] = useState<RestaurantEvaluateDto[]>([]);
 
   useEffect(() => {
     if (!data || !ref.current) return;
@@ -57,41 +64,30 @@ export default function Search() {
         // 존재하지 않는 키라면 새로 생성
         copy[label] = [key + ""];
       } else {
-        if (!copy[label]?.includes(key.toString())) {
-          // 키는 존재하는데 배열에 값이 없으면 새로 추가
-          copy[label] = [...(copy[label] as string[]), key.toString()];
+        if (Array.isArray(copy[label])) {
+          if (!copy[label]?.includes(key.toString())) {
+            // 키는 존재하는데 배열에 값이 없으면 새로 추가
+            copy[label] = [...(copy[label] as string[]), key.toString()];
+          } else {
+            // 배열에 값이 존재하면 제거
+            copy[label] = (copy[label] as string[]).filter(
+              (item) => item !== key.toString()
+            );
+            // 배열이 비었다면 키 제거
+            if (!copy[label]?.length) delete copy[label];
+          }
         } else {
-          // 배열에 값이 존재하면 제거
-          copy[label] = (copy[label] as string[]).filter(
-            (item) => item !== key.toString()
-          );
-          // 배열이 비었다면 키 제거
-          if (!copy[label]?.length) delete copy[label];
+          // flavor=1&keyword=돈까스 인 상태에서 새로고침하면 flavor: 1, 배열이 아님
+          if (copy[label] === key) {
+            delete copy[label];
+          } else {
+            copy[label] = [copy[label] as string, key + ""];
+          }
         }
       }
       return copy;
     });
   }
-
-  useEffect(() => {
-    const url = `${pathname}?${searchParams}`;
-    const params = url.split("?")[1];
-    if (Object.keys(queryString.parse(params)).length === 1) {
-      // 키워드만 존재
-      getByKeyword({ id, qs: params })
-        .unwrap()
-        .then((res) => setData(res));
-    } else {
-      // 필터 적용됨
-      getByFilter({ id, qs: params })
-        .unwrap()
-        .then((res) => setData(res));
-    }
-  }, [pathname, searchParams, id, getByKeyword, getByFilter]);
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <div className="pt-12 px-6">
@@ -164,7 +160,7 @@ export default function Search() {
           })}
         </div>
         <div className="flex space-x-2 ml-4">
-          {searchParams && (
+          {isFilterMode && (
             <Button
               isIconOnly
               variant="bordered"
@@ -191,8 +187,8 @@ export default function Search() {
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 py-12">
         {data?.map((item, i) => (
           <HomeCard
-            item={item}
             key={item.menuId}
+            item={item}
             ref={i === data.length - 1 ? ref : undefined}
           />
         ))}

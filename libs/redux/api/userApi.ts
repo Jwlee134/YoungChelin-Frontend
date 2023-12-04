@@ -112,11 +112,12 @@ export const userApi = api.injectEndpoints({
       serializeQueryArgs: ({ endpointName }) => {
         return endpointName;
       },
-      merge: (currentCache, newItems) => {
-        currentCache.push(...newItems);
+      merge: (currentCache, newItems, { arg }) => {
+        if (arg.id !== undefined && arg.id !== 0)
+          currentCache.push(...newItems);
       },
       forceRefetch({ currentArg, previousArg }) {
-        return currentArg !== previousArg;
+        return currentArg?.id !== previousArg?.id;
       },
     }),
 
