@@ -25,33 +25,37 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
               return (
                 <Tooltip
                   key={mood}
-                  content={keyWithData.data[mood]?.description}
+                  content={keyWithData.data[mood].description}
                   closeDelay={0}
                 >
                   <Image
                     width={28}
-                    src={keyWithData.data[mood]?.src}
-                    alt={keyWithData.data[mood]?.description}
+                    src={keyWithData.data[mood].src}
+                    alt={keyWithData.data[mood].description}
                   />
                 </Tooltip>
               );
             })
             .flat();
         }
-        return (
-          <Tooltip
-            key={evaluatedKey}
-            content={keyWithData.data[v]?.description}
-            closeDelay={0}
-          >
-            <Image
-              width={28}
-              height={28}
-              src={keyWithData.data[v]?.src}
-              alt={keyWithData.data[v]?.description}
-            />
-          </Tooltip>
-        );
+        const item = keyWithData.data[v];
+        if (item) {
+          return (
+            <Tooltip
+              key={evaluatedKey}
+              content={item.description}
+              closeDelay={0}
+            >
+              <Image
+                width={28}
+                height={28}
+                src={item.src}
+                alt={item.description}
+              />
+            </Tooltip>
+          );
+        }
+        return null;
       })}
     </div>
   );
