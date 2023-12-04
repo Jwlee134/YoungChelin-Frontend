@@ -38,7 +38,7 @@ export default function SearchBar() {
         {...register("keyword", { required: true })}
         variant="bordered"
         startContent={
-          <span className="text-gray-400 text-xl">
+          <span className="text-gray-400 text-lg">
             <IoSearchOutline />
           </span>
         }

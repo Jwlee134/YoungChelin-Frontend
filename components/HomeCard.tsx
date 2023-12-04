@@ -9,28 +9,20 @@ interface Props {
 
 function HomeCard({ item }: Props, ref: ForwardedRef<HTMLDivElement>) {
   return (
-    <Card
-      className="aspect-square"
-      as={Link}
-      href={`/dishes/${item.menuId}`}
-      ref={ref}
-    >
-      <CardBody className="p-0">
+    <Card as={Link} href={`/dishes/${item.menuId}`} ref={ref}>
+      <CardBody className="p-0 grow-0">
         <Image
           shadow="sm"
           radius="none"
           alt="썸네일"
-          className="w-full object-cover aspect-[4/3] h-full"
-          classNames={{
-            wrapper: "w-full h-full",
-            zoomedWrapper: "w-full h-full",
-          }}
+          width="100%"
+          className="object-cover aspect-[4/3]"
           src={item.url}
           isZoomed
         />
       </CardBody>
-      <CardFooter className="text-small flex justify-between aspect-[4/1] items-center">
-        <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis ">
+      <CardFooter className="text-small flex justify-between items-start">
+        <div className="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis">
           {item.menuName}
         </div>
         <ResultDtoMapper data={item.evaluate} />

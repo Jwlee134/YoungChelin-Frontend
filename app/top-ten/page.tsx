@@ -44,17 +44,17 @@ export default function TopTen() {
             <Fragment key={i}>
               {idx !== undefined && idx !== -1 ? (
                 <Card className="aspect-square">
-                  <CardBody className="p-0">
+                  <CardBody className="p-0 grow-0">
                     <Image
                       src={data?.[idx].url}
                       alt="썸네일"
                       radius="none"
-                      className="object-cover aspect-[5/4] w-full h-full"
-                      classNames={{ wrapper: "w-full h-full" }}
+                      width="100%"
+                      className="object-cover aspect-[4/3]"
                     />
                   </CardBody>
-                  <CardFooter className="flex justify-between items-center aspect-[5/1] shrink-0">
-                    <div className="w-full font-bold text-lg text-ellipsis whitespace-nowrap overflow-hidden">
+                  <CardFooter className="flex justify-between items-start">
+                    <div className="font-bold text-lg text-ellipsis whitespace-nowrap overflow-hidden">
                       {data?.[idx].menuName}
                     </div>
                     {data && <ResultDtoMapper data={data?.[idx].evaluate} />}

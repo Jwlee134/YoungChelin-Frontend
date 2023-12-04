@@ -58,11 +58,12 @@ export default function SelectMenu() {
             <CardBody className="p-0">
               <Image
                 shadow="sm"
-                radius="lg"
-                width="100%"
+                radius="none"
                 alt={item.menuName}
-                className="w-full object-cover aspect-[4/3]"
+                width="100%"
+                className="object-cover aspect-[4/3]"
                 src={item.url}
+                isZoomed
               />
             </CardBody>
             <CardFooter className="text-small">

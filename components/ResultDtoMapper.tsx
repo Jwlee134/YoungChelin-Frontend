@@ -29,9 +29,9 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
                   closeDelay={0}
                 >
                   <Image
-                    width={28}
                     src={keyWithData.data[mood].src}
                     alt={keyWithData.data[mood].description}
+                    className="max-w-[28px]"
                   />
                 </Tooltip>
               );
@@ -47,10 +47,9 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
               closeDelay={0}
             >
               <Image
-                width={28}
-                height={28}
                 src={item.src}
                 alt={item.description}
+                className="max-w-[28px]"
               />
             </Tooltip>
           );
