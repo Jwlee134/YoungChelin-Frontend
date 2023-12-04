@@ -4,6 +4,7 @@ import MyPageCard from "@/components/MyPageCard";
 import ChangePasswordModal from "@/components/modals/ChangePasswordModal";
 import EditProfilePictureModal from "@/components/modals/EditProfilePictureModal";
 import QuitModal from "@/components/modals/QuitModal";
+import { userApi } from "@/libs/redux/api/userApi";
 import { Avatar, useDisclosure } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
@@ -24,11 +25,12 @@ export default function MyPage() {
     onOpenChange: onQuitOpenChange,
   } = useDisclosure();
   const router = useRouter();
+  const { data } = userApi.useGetMeQuery();
 
   return (
     <div className="pt-20 px-6">
       <div className="flex items-center">
-        <Avatar className="w-40 h-40" />
+        <Avatar className="w-40 h-40" src={data?.url} />
         <div className="pl-10 text-4xl">
           안녕하세요,
           <br />

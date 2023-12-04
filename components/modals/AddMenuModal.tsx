@@ -38,9 +38,10 @@ export default function AddMenuModal({
     if (!file.data) return;
     const formData = new FormData();
     formData.append("file", file.data);
-    formData.append("restaurantId", restaurantId + "");
     formData.append("menuName", name);
-    trigger(formData).unwrap().then(onClose);
+    trigger({ body: formData, restaurantId: restaurantId + "" })
+      .unwrap()
+      .then(onClose);
   }
 
   async function handleChange(e: ChangeEvent<HTMLInputElement>) {

@@ -29,15 +29,16 @@ export const evaluateApi = api.injectEndpoints({
     /**
      * FormData key 목록
      * @param file - File
-     * @param restaurantId - string
      * @param menuName - string
      */
-    postMenu: build.mutation<MenuResponseDto, FormData>({
-      query: (body) => ({
-        url: "/evaluate/menu/add-menu",
+    postMenu: build.mutation<
+      MenuResponseDto,
+      { body: FormData; restaurantId: string }
+    >({
+      query: ({ body, restaurantId }) => ({
+        url: `/evaluate/menu/add-menu?restaurantId=${restaurantId}`,
         method: "POST",
         body,
-        headers: { "Content-Type": "multipart/form-data;" },
       }),
       invalidatesTags: [{ type: "Dish", id: "LIST" }],
     }),
@@ -54,7 +55,6 @@ export const evaluateApi = api.injectEndpoints({
         url: `/evaluate/menu/survey/${menuId}`,
         method: "POST",
         body,
-        headers: { "Content-Type": "multipart/form-data;" },
       }),
     }),
   }),

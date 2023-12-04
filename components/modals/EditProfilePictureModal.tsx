@@ -36,7 +36,7 @@ export default function EditProfilePictureModal({
     e.target.value = "";
   }
 
-  async function handleClick() {
+  function handleClick() {
     if (!data.file) return;
     const formData = new FormData();
     formData.append("file", data.file);
@@ -63,7 +63,7 @@ export default function EditProfilePictureModal({
           <Image
             src={data.url || ""}
             alt="썸네일"
-            className="w-full h-full object-cover cursor-pointer rounded-full"
+            className="w-full h-full object-cover cursor-pointer rounded-full aspect-square"
             classNames={{ wrapper: "absolute inset-2" }}
           />
         </label>

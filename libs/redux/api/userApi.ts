@@ -88,7 +88,6 @@ export const userApi = api.injectEndpoints({
         url: "/mypage/profile-upload",
         method: "POST",
         body,
-        headers: { "Content-Type": "multipart/form-data;" },
       }),
       invalidatesTags: [{ type: "Profile" }],
     }),
