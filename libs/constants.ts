@@ -88,19 +88,19 @@ export const evaluationItems: EvaluationItemsType = {
       2: {
         id: "2",
         description: "아주 특별한 날을 위해",
-        src: "",
+        src: "/images/money3.png",
         pos: { y: -70, x: 0 },
       },
       1: {
         id: "1",
         description: "특별한 날",
-        src: "",
+        src: "/images/money2.png",
         pos: { y: 35, x: -60.62 },
       },
       0: {
         id: "0",
         description: "즐거운 식사",
-        src: "",
+        src: "/images/money1.png",
         pos: { y: 35, x: 60.62 },
       },
     },
