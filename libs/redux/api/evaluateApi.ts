@@ -12,7 +12,7 @@ export const evaluateApi = api.injectEndpoints({
 
     getDishes: build.query<MenuResponseDto[], string>({
       query: (restaurantId) => ({
-        url: `/evaluate/menu/${restaurantId}`,
+        url: `/evaluate/menu?restaurantId=${restaurantId}`,
       }),
       providesTags: (result) =>
         result
