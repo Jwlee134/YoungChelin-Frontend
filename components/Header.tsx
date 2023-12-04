@@ -65,33 +65,37 @@ export default function Header() {
             <DropdownTrigger>
               <Avatar showFallback src={data?.url} className="cursor-pointer" />
             </DropdownTrigger>
-            <DropdownMenu aria-label="Dropdown Actions">
-              {data?.userName ? (
-                <>
-                  <DropdownItem onClick={() => router.push("/my-page")}>
-                    마이페이지
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => router.push("/evaluation/select-restaurant")}
-                  >
-                    평가
-                  </DropdownItem>
-                  <DropdownItem onClick={() => router.push("/recommendations")}>
-                    추천
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => {
-                      setToken(null);
-                      refetch();
-                    }}
-                  >
-                    로그아웃
-                  </DropdownItem>
-                </>
-              ) : (
-                <DropdownItem onClick={onOpen}>로그인</DropdownItem>
-              )}
-            </DropdownMenu>
+            {data?.userName ? (
+              <DropdownMenu aria-label="Dropdown Actions">
+                <DropdownItem key="my-page" href="/my-page">
+                  마이페이지
+                </DropdownItem>
+                <DropdownItem
+                  key="evaluation"
+                  href="/evaluation/select-restaurant"
+                >
+                  평가
+                </DropdownItem>
+                <DropdownItem key="recommendations" href="/recommendations">
+                  추천
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  onClick={() => {
+                    setToken(null);
+                    refetch();
+                  }}
+                >
+                  로그아웃
+                </DropdownItem>
+              </DropdownMenu>
+            ) : (
+              <DropdownMenu aria-label="Dropdown Actions">
+                <DropdownItem key="login" onClick={onOpen}>
+                  로그인
+                </DropdownItem>
+              </DropdownMenu>
+            )}
           </Dropdown>
         </div>
       </div>
