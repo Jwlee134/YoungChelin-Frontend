@@ -23,12 +23,9 @@ export default function EvaluationHistoryPage() {
       <h1 className="text-xl font-bold mb-4">평가 내역</h1>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         {data?.map((item, i) => (
-          <EvaluationCard
-            key={item.menuId}
-            item={item}
-            ref={i === data.length - 1 && !item.last ? ref : undefined}
-          />
+          <EvaluationCard key={item.menuId} item={item} />
         ))}
+        <div ref={ref} />
       </div>
     </div>
   );

@@ -1,20 +1,15 @@
 import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import Link from "next/link";
-import { ForwardedRef, forwardRef, memo } from "react";
+import { memo } from "react";
 import ResultDtoMapper from "./ResultDtoMapper";
 
 interface Props {
   item: RestaurantEvaluateDto;
 }
 
-function HomeCard({ item }: Props, ref: ForwardedRef<HTMLDivElement>) {
+function HomeCard({ item }: Props) {
   return (
-    <Card
-      className="aspect-square"
-      as={Link}
-      href={`/dishes/${item.menuId}`}
-      ref={ref}
-    >
+    <Card className="aspect-square" as={Link} href={`/dishes/${item.menuId}`}>
       <CardBody className="p-0">
         <Image
           shadow="sm"
@@ -39,6 +34,4 @@ function HomeCard({ item }: Props, ref: ForwardedRef<HTMLDivElement>) {
   );
 }
 
-const forwarded = forwardRef(HomeCard);
-
-export default memo(forwarded);
+export default memo(HomeCard);

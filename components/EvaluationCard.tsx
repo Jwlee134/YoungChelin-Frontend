@@ -1,6 +1,6 @@
 import { Card, CardBody, Image } from "@nextui-org/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ForwardedRef, forwardRef, memo } from "react";
+import { memo } from "react";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import ResultDtoMapper from "./ResultDtoMapper";
 
@@ -10,10 +10,7 @@ interface Props {
   selectedId?: number | null;
 }
 
-function EvaluationCard(
-  { item, handlePress, selectedId }: Props,
-  ref: ForwardedRef<HTMLDivElement>
-) {
+function EvaluationCard({ item, handlePress, selectedId }: Props) {
   return (
     <Card
       key={item.menuId}
@@ -21,7 +18,6 @@ function EvaluationCard(
       isPressable
       onPress={handlePress ? () => handlePress(item.menuId) : undefined}
       className="w-full"
-      ref={ref}
     >
       <CardBody>
         <div className="flex gap-3">
@@ -55,6 +51,4 @@ function EvaluationCard(
   );
 }
 
-const forwarded = forwardRef(EvaluationCard);
-
-export default memo(forwarded);
+export default memo(EvaluationCard);

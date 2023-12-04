@@ -29,12 +29,9 @@ export default function Home() {
       <div className="pt-[calc(70vh-280px)] px-6 pb-12 w-full">
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full">
           {data?.map((item, i) => (
-            <HomeCard
-              item={item}
-              ref={i === data.length - 1 && !item.last ? ref : undefined}
-              key={item.id}
-            />
+            <HomeCard item={item} key={item.id} />
           ))}
+          <div ref={ref} />
         </div>
       </div>
     </div>

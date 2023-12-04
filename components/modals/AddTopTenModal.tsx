@@ -81,9 +81,9 @@ export default function AddTopTenModal({
             item={item}
             handlePress={(id) => handlePress(id)}
             selectedId={selectedId}
-            ref={i === data.length - 1 && !item.last ? ref : undefined}
           />
         ))}
+        <div ref={ref} />
       </div>
     </Modal>
   );

@@ -12,18 +12,20 @@ import Image from "next/image";
 import Link from "next/link";
 import LoginModal from "./modals/LoginModal";
 import SearchBar from "./SearchBar";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import useIntersectingStore from "@/hooks/useIntersectingStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { userApi } from "@/libs/redux/api/userApi";
 import { setToken } from "@/libs/utils";
+import { useDispatch } from "@/libs/redux/store";
+import { api } from "@/libs/redux/api";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const router = useRouter();
   const pathname = usePathname();
   const isIntersecting = useIntersectingStore((state) => state.isIntersecting);
-  const { data, refetch } = userApi.useGetMeQuery();
+  const { data } = userApi.useGetMeQuery();
+  const dispatch = useDispatch();
 
   return (
     <header className="w-full h-20 bg-white/70 fixed top-0 backdrop-blur-xl z-50">
@@ -83,7 +85,7 @@ export default function Header() {
                   key="logout"
                   onClick={() => {
                     setToken(null);
-                    refetch();
+                    dispatch(api.util.invalidateTags([{ type: "Profile" }]));
                   }}
                 >
                   로그아웃
