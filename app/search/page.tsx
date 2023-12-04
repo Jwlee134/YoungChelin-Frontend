@@ -31,7 +31,7 @@ export default function Search() {
   const [getByFilter, { data: filterData, isLoading: isFiltering }] =
     homeApi.useLazyGetByFilterQuery();
   const ref = useRef<HTMLDivElement>(null);
-  const data = Object.keys(initialData).length > 1 ? filterData : keywordData;
+  const [data, setData] = useState<RestaurantEvaluateDto[]>([]);
 
   useEffect(() => {
     if (!data || !ref.current) return;
@@ -78,12 +78,20 @@ export default function Search() {
     const params = url.split("?")[1];
     if (Object.keys(queryString.parse(params)).length === 1) {
       // 키워드만 존재
-      getByKeyword({ id, qs: params });
+      getByKeyword({ id, qs: params })
+        .unwrap()
+        .then((res) => setData(res));
     } else {
       // 필터 적용됨
-      getByFilter({ id, qs: params });
+      getByFilter({ id, qs: params })
+        .unwrap()
+        .then((res) => setData(res));
     }
   }, [pathname, searchParams, id, getByKeyword, getByFilter]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   return (
     <div className="pt-12 px-6">
