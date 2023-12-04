@@ -47,7 +47,12 @@ export const evaluateApi = api.injectEndpoints({
      * FormData key 목록
      * @param menuId - number
      * @param restaurantId - string
-     * @param resultDto - ResultDto
+     * @param flavor - string
+     * @param mood - string
+     * @param service - string
+     * @param price - string
+     * @param cleanliness - string
+     * @param plating - string
      * @param file - File
      */
     postEvaluation: build.mutation<void, FormData>({

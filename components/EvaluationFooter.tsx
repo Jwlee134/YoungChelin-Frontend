@@ -57,17 +57,12 @@ export default function EvaluationFooter() {
               const formData = new FormData();
               formData.append("menuId", item.id + "");
               formData.append("restaurantId", restaurant.id + "");
-              formData.append(
-                "resultDto",
-                JSON.stringify({
-                  flavor: item.flavor,
-                  mood: item.mood,
-                  service: item.service,
-                  price: item.price,
-                  cleanliness: item.cleanliness,
-                  plating: item.plating,
-                })
-              );
+              formData.append("flavor", item.flavor + "");
+              formData.append("mood", item.mood + "");
+              formData.append("service", item.service + "");
+              formData.append("price", item.price + "");
+              formData.append("cleanliness", item.cleanliness + "");
+              formData.append("plating", item.plating + "");
               formData.append("file", item.file);
               postEvaluation(formData);
             })
