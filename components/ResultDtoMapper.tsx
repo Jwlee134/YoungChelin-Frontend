@@ -18,20 +18,20 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
     >
       {Object.keys(data).map((evaluatedKey, i) => {
         const keyWithData = evaluationItems[evaluatedKey as EvaluationItems];
-        const v = Object.values(data)[i] as string;
+        const v = Object.values(data)?.[i] as string;
         if (evaluatedKey === EvaluationItems.MOOD) {
-          return data[evaluatedKey]
-            .map((mood) => {
+          return data?.[evaluatedKey]
+            ?.map((mood) => {
               return (
                 <Tooltip
                   key={mood}
-                  content={keyWithData.data[mood].description}
+                  content={keyWithData.data[mood]?.description}
                   closeDelay={0}
                 >
                   <Image
                     width={28}
-                    src={keyWithData.data[mood].src}
-                    alt={keyWithData.data[mood].description}
+                    src={keyWithData.data[mood]?.src}
+                    alt={keyWithData.data[mood]?.description}
                   />
                 </Tooltip>
               );
@@ -41,14 +41,14 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
         return (
           <Tooltip
             key={evaluatedKey}
-            content={keyWithData.data[v].description}
+            content={keyWithData.data[v]?.description}
             closeDelay={0}
           >
             <Image
               width={28}
               height={28}
-              src={keyWithData.data[v].src}
-              alt={keyWithData.data[v].description}
+              src={keyWithData.data[v]?.src}
+              alt={keyWithData.data[v]?.description}
             />
           </Tooltip>
         );
