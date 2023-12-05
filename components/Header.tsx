@@ -13,17 +13,18 @@ import Link from "next/link";
 import LoginModal from "./modals/LoginModal";
 import SearchBar from "./SearchBar";
 import { usePathname } from "next/navigation";
-import useIntersectingStore from "@/hooks/useIntersectingStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { userApi } from "@/libs/redux/api/userApi";
 import { setToken } from "@/libs/utils";
-import { useDispatch } from "@/libs/redux/store";
+import { useDispatch, useSelector } from "@/libs/redux/store";
 import { api } from "@/libs/redux/api";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const pathname = usePathname();
-  const isIntersecting = useIntersectingStore((state) => state.isIntersecting);
+  const isIntersecting = useSelector(
+    (state) => state.global.isHomeLogoIntersecting
+  );
   const { data, isError } = userApi.useGetMeQuery();
   const dispatch = useDispatch();
 

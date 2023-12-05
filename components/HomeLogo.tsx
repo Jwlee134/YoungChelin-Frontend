@@ -1,21 +1,20 @@
 "use client";
 
-import useIsIntersecting from "@/hooks/useIntersectingStore";
+import { globalActions } from "@/libs/redux/slices/globalSlice";
+import { useDispatch } from "@/libs/redux/store";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 export default function HomeLogo() {
   const ref = useRef<HTMLAnchorElement>(null);
-  const setIsIntersecting = useIsIntersecting(
-    (state) => state.setIsIntersecting
-  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let observerRefValue: HTMLAnchorElement | null = null;
     const observer = new IntersectionObserver(
       ([e]) => {
-        setIsIntersecting(e.isIntersecting);
+        dispatch(globalActions.setIsHomeLogoIntersecting(e.isIntersecting));
       },
       { rootMargin: "20px 0px 0px 0px" }
     );
@@ -26,7 +25,7 @@ export default function HomeLogo() {
     return () => {
       if (observerRefValue) observer.unobserve(observerRefValue);
     };
-  }, [setIsIntersecting]);
+  }, [dispatch]);
 
   return (
     <Link ref={ref} href={"/"}>
