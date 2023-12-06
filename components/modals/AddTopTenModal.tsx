@@ -20,7 +20,7 @@ export default function AddTopTenModal({
   topTen,
 }: AddTopTenModalProps) {
   const [selectedId, setSelectedId] = useState("");
-  const [trigger, { isLoading }] = userApi.usePostTopTenMutation();
+  const [trigger, { isLoading, error }] = userApi.usePostTopTenMutation();
   const [id, setId] = useState(0);
   const { data } = userApi.useGetEvaluationHistoryQuery(
     { id },
@@ -64,6 +64,12 @@ export default function AddTopTenModal({
   function handlePress(id: string) {
     setSelectedId((prev) => (prev === id ? "" : id));
   }
+
+  useEffect(() => {
+    if (!error) return;
+    if ("status" in error && error.status === 409)
+      alert("같은 메뉴를 중복으로 추가할 수 없습니다.");
+  }, [error]);
 
   useEffect(() => {
     return () => {
