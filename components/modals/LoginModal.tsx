@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "./Modal";
 import { userApi } from "@/libs/redux/api/userApi";
-import { setToken } from "@/libs/utils";
 import EmailInputs from "../EmailInputs";
+import ErrorMessage from "../ErrorMessage";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ export interface LoginForm {
   email: string;
   emailAddress: string;
   password: string;
-  error: string;
+  apiError: string;
 }
 
 enum Mode {
@@ -50,7 +50,9 @@ export default function LoginModal({
     register,
     handleSubmit,
     formState: { errors },
+    setError,
     reset,
+    clearErrors,
   } = useForm<LoginForm>();
   const [login, { isLoading: isLoggingIn }] = userApi.useLoginMutation();
   const [sendEmail, { isLoading: isSendingEmail }] =
@@ -64,7 +66,14 @@ export default function LoginModal({
 
     switch (mode) {
       case Mode.LOGIN:
-        login({ userName: username, password }).unwrap().then(onClose);
+        login({ userName: username, password })
+          .unwrap()
+          .then(onClose)
+          .catch(() => {
+            setError("apiError", {
+              message: "아이디 또는 비밀번호가 일치하지 않습니다.",
+            });
+          });
         break;
       case Mode.SIGN_UP:
         sendEmail({ email: combinedEmail })
@@ -78,8 +87,12 @@ export default function LoginModal({
           .unwrap()
           .then(() => {
             setMode(Mode.AFTER_FIND_PW);
+          })
+          .catch(() => {
+            setError("apiError", {
+              message: "존재하지 않는 이메일입니다.",
+            });
           });
-
         break;
       case Mode.FIND_ID:
         findId({ email: combinedEmail })
@@ -87,6 +100,11 @@ export default function LoginModal({
           .then((username) => {
             setFoundUsername(username);
             setMode(Mode.AFTER_FIND_ID);
+          })
+          .catch(() => {
+            setError("apiError", {
+              message: "존재하지 않는 이메일입니다.",
+            });
           });
     }
   }
@@ -107,14 +125,12 @@ export default function LoginModal({
           autoFocus
           label="아이디"
           variant="bordered"
-          isInvalid={!!errors.password}
         />
         <Input
           {...register("password", { required: true })}
           type="password"
           label="비밀번호"
           variant="bordered"
-          isInvalid={!!errors.password}
         />
         <Button
           type="submit"
@@ -124,15 +140,30 @@ export default function LoginModal({
         >
           {texts[mode][1]}
         </Button>
+        {errors.apiError?.message && (
+          <ErrorMessage text={errors.apiError.message} />
+        )}
       </form>
       <div className="py-2 flex justify-end items-center text-sm text-gray-500 gap-6">
         <div className="cursor-pointer" onClick={() => setMode(Mode.SIGN_UP)}>
           회원가입
         </div>
-        <div className="cursor-pointer" onClick={() => setMode(Mode.FIND_ID)}>
+        <div
+          className="cursor-pointer"
+          onClick={() => {
+            clearErrors("apiError");
+            setMode(Mode.FIND_ID);
+          }}
+        >
           아이디 찾기
         </div>
-        <div className="cursor-pointer" onClick={() => setMode(Mode.FIND_PW)}>
+        <div
+          className="cursor-pointer"
+          onClick={() => {
+            clearErrors("apiError");
+            setMode(Mode.FIND_PW);
+          }}
+        >
           비밀번호 찾기
         </div>
       </div>
@@ -185,6 +216,9 @@ export default function LoginModal({
         >
           {texts[mode][1]}
         </Button>
+        {errors.apiError?.message && (
+          <ErrorMessage text={errors.apiError.message} />
+        )}
       </form>
     );
   }
@@ -212,6 +246,9 @@ export default function LoginModal({
         >
           {texts[mode][1]}
         </Button>
+        {errors.apiError?.message && (
+          <ErrorMessage text={errors.apiError.message} />
+        )}
       </form>
     );
   }
