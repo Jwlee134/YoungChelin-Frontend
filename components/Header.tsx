@@ -17,7 +17,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { userApi } from "@/libs/redux/api/userApi";
 import { setToken } from "@/libs/utils";
 import { useDispatch, useSelector } from "@/libs/redux/store";
-import { api } from "@/libs/redux/api";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -90,7 +89,9 @@ export default function Header() {
                   key="logout"
                   onClick={() => {
                     setToken(null);
-                    dispatch(api.util.invalidateTags([{ type: "Profile" }]));
+                    dispatch(
+                      userApi.util.invalidateTags([{ type: "Profile" }])
+                    );
                   }}
                 >
                   로그아웃

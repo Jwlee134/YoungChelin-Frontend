@@ -20,7 +20,7 @@ export default function TopTen() {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { data } = userApi.useGetTopTenQuery();
-  const [trigger] = userApi.usePostTopTenMutation();
+  const [trigger] = userApi.useDeleteTopTenMutation();
 
   function handleClick(i: number) {
     setSelectedIdx(i);
@@ -29,7 +29,8 @@ export default function TopTen() {
 
   function handleDelete(rank: string) {
     if (!data) return;
-    trigger(data.filter((item) => item.rank !== rank));
+    const item = data.find((item) => item.rank === rank);
+    if (item) trigger(item);
   }
 
   return (

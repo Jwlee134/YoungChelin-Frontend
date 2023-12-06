@@ -154,6 +154,22 @@ export const userApi = api.injectEndpoints({
       },
     }),
 
+    deleteTopTen: build.mutation<void, TopTenDto>({
+      query: (body) => ({
+        url: "/mypage/delete-top10-list",
+        method: "POST",
+        body,
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        const result = dispatch(
+          userApi.util.updateQueryData("getTopTen", undefined, (draft) =>
+            draft.filter((item) => item.menuId !== arg.menuId)
+          )
+        );
+        queryFulfilled.catch(result.undo);
+      },
+    }),
+
     deleteAccount: build.mutation<void, void>({
       query: () => ({
         url: "/mypage/withdraw",

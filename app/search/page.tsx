@@ -192,6 +192,9 @@ export default function Search() {
             ref={i === data.length - 1 ? ref : undefined}
           />
         ))}
+        {data && !data.length && (
+          <div className="text-black/50">검색된 데이터가 없습니다.</div>
+        )}
       </div>
     </div>
   );

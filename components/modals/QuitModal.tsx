@@ -2,6 +2,8 @@ import { Button } from "@nextui-org/react";
 import Modal from "./Modal";
 import { userApi } from "@/libs/redux/api/userApi";
 import { setToken } from "@/libs/utils";
+import { useDispatch } from "@/libs/redux/store";
+import { useRouter } from "next/navigation";
 
 interface QuitModalProps {
   isOpen: boolean;
@@ -15,13 +17,15 @@ export default function QuitModal({
   onClose,
 }: QuitModalProps) {
   const [trigger, { isLoading }] = userApi.useDeleteAccountMutation();
-  const { refetch } = userApi.useGetMeQuery();
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   async function handleClick() {
     trigger().then(() => {
       setToken(null);
-      refetch();
+      dispatch(userApi.util.invalidateTags([{ type: "Profile" }]));
       onClose();
+      router.replace("/");
     });
   }
 
