@@ -77,7 +77,7 @@ export default function SignUpModal({
       {isVerifying ? (
         <Spinner />
       ) : isSuccess ? (
-        <form className="space-y-3 mb-6">
+        <form className="space-y-3 mb-6" onSubmit={handleSubmit(onValid)}>
           <Input
             {...register("username", { required: true })}
             autoFocus
@@ -99,12 +99,7 @@ export default function SignUpModal({
             variant="bordered"
             isInvalid={!!errors.passwordConfirm}
           />
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={handleSubmit(onValid)}
-            isLoading={isLoading}
-          >
+          <Button type="submit" className="w-full" isLoading={isLoading}>
             회원가입
           </Button>
           {errors.error?.message && (

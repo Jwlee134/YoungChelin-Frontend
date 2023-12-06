@@ -169,14 +169,9 @@ export default function LoginModal({
   if (mode === Mode.SIGN_UP) {
     bodyContent = (
       <>
-        <form className="space-y-3">
+        <form className="space-y-3" onSubmit={handleSubmit(onValid)}>
           <EmailInputs register={register} errors={errors} />
-          <Button
-            type="submit"
-            className="w-full"
-            onClick={handleSubmit(onValid)}
-            isLoading={isSendingEmail}
-          >
+          <Button type="submit" className="w-full" isLoading={isSendingEmail}>
             {texts[mode][1]}
           </Button>
         </form>
