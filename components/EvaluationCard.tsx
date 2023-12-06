@@ -3,25 +3,28 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ForwardedRef, forwardRef, memo } from "react";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import ResultDtoMapper from "./ResultDtoMapper";
+import Link from "next/link";
 
 interface Props {
   item: RestaurantEvaluateDto;
-  handlePress?: (id: number) => void;
-  selectedId?: number | null;
+  handlePress?: (id: string) => void;
+  selectedId?: string;
+  hasLink?: boolean;
 }
 
 function EvaluationCard(
-  { item, handlePress, selectedId }: Props,
+  { item, handlePress, selectedId, hasLink = false }: Props,
   ref: ForwardedRef<HTMLDivElement>
 ) {
   return (
     <Card
-      key={item.menuId}
       shadow="sm"
       isPressable
-      onPress={handlePress ? () => handlePress(item.menuId) : undefined}
+      onPress={handlePress ? () => handlePress(item.id) : undefined}
       className="w-full"
       ref={ref}
+      as={hasLink ? Link : undefined}
+      href={hasLink ? `/dishes/${item.menuId}` : undefined}
     >
       <CardBody>
         <div className="flex gap-3">
@@ -39,7 +42,7 @@ function EvaluationCard(
       </CardBody>
       {selectedId !== undefined && (
         <AnimatePresence>
-          {selectedId === item.menuId && (
+          {selectedId === item.id && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

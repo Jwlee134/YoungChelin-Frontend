@@ -2,7 +2,6 @@
 
 import EvaluationCard from "@/components/EvaluationCard";
 import { userApi } from "@/libs/redux/api/userApi";
-import { useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 export default function EvaluationHistoryPage() {
@@ -27,7 +26,7 @@ export default function EvaluationHistoryPage() {
   }, [data]);
 
   return (
-    <div className="pt-12 px-6">
+    <div className="py-12 px-6">
       <h1 className="text-xl font-bold mb-4">평가 내역</h1>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         {data?.map((item, i) => (
@@ -35,9 +34,9 @@ export default function EvaluationHistoryPage() {
             key={item.menuId}
             item={item}
             ref={i === data.length - 1 ? ref : undefined}
+            hasLink
           />
         ))}
-        =
       </div>
     </div>
   );

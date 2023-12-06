@@ -29,14 +29,12 @@ export const evaluateApi = api.injectEndpoints({
     /**
      * FormData key 목록
      * @param file - File
+     * @param restaurantId - string
      * @param menuName - string
      */
-    postMenu: build.mutation<
-      MenuResponseDto,
-      { body: FormData; restaurantId: string }
-    >({
-      query: ({ body, restaurantId }) => ({
-        url: `/evaluate/menu/add-menu?restaurantId=${restaurantId}`,
+    postMenu: build.mutation<MenuResponseDto, FormData>({
+      query: (body) => ({
+        url: "/evaluate/menu/add-menu",
         method: "POST",
         body,
       }),

@@ -144,6 +144,14 @@ export const userApi = api.injectEndpoints({
         body,
       }),
       invalidatesTags: [{ type: "TopTen", id: "LIST" }],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        const result = dispatch(
+          userApi.util.updateQueryData("getTopTen", undefined, (draft) => {
+            return arg;
+          })
+        );
+        queryFulfilled.catch(result.undo);
+      },
     }),
 
     deleteAccount: build.mutation<void, void>({

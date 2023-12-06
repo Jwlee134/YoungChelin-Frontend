@@ -11,6 +11,7 @@ import {
   Image,
   useDisclosure,
 } from "@nextui-org/react";
+import Link from "next/link";
 import { Fragment, useState } from "react";
 import { HiOutlineTrash } from "react-icons/hi2";
 
@@ -19,10 +20,16 @@ export default function TopTen() {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { data } = userApi.useGetTopTenQuery();
+  const [trigger] = userApi.usePostTopTenMutation();
 
   function handleClick(i: number) {
     setSelectedIdx(i);
     onOpen();
+  }
+
+  function handleDelete(rank: string) {
+    if (!data) return;
+    trigger(data.filter((item) => item.rank !== rank));
   }
 
   return (
@@ -43,7 +50,11 @@ export default function TopTen() {
           return (
             <Fragment key={i}>
               {idx !== undefined && idx !== -1 ? (
-                <Card className="aspect-square">
+                <Card
+                  className="aspect-square"
+                  as={Link}
+                  href={`/dishes/${data?.[idx].menuId}`}
+                >
                   <CardBody className="p-0 grow-0">
                     <Image
                       src={data?.[idx].url}
@@ -64,6 +75,10 @@ export default function TopTen() {
                       className="absolute top-4 right-4 z-10 bg-red-400 text-white w-10 h-10 text-xl p-0 border border-red-300"
                       radius="full"
                       isIconOnly
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDelete(i + 1 + "");
+                      }}
                     >
                       <HiOutlineTrash />
                     </Button>

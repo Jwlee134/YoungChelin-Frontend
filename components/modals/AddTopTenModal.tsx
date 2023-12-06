@@ -19,7 +19,7 @@ export default function AddTopTenModal({
   selectedIdx,
   topTen,
 }: AddTopTenModalProps) {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState("");
   const [trigger, { isLoading }] = userApi.usePostTopTenMutation();
   const [id, setId] = useState(0);
   const { data } = userApi.useGetEvaluationHistoryQuery(
@@ -46,7 +46,7 @@ export default function AddTopTenModal({
 
   async function handleClick() {
     if (!topTen || selectedIdx === null) return;
-    const item = data?.find((item) => item.menuId === selectedId)!;
+    const item = data?.find((item) => item.id === selectedId)!;
     trigger([
       ...topTen,
       {
@@ -57,14 +57,19 @@ export default function AddTopTenModal({
         url: item.url,
         rank: selectedIdx + 1 + "",
       },
-    ])
-      .unwrap()
-      .then(onClose);
+    ]);
+    onClose();
   }
 
-  function handlePress(id: number) {
-    setSelectedId((prev) => (prev === id ? null : id));
+  function handlePress(id: string) {
+    setSelectedId((prev) => (prev === id ? "" : id));
   }
+
+  useEffect(() => {
+    return () => {
+      setSelectedId("");
+    };
+  }, [isOpen]);
 
   return (
     <Modal
@@ -84,7 +89,7 @@ export default function AddTopTenModal({
       <div className="max-h-[50vh] overflow-y-auto space-y-3 p-3">
         {data?.map((item, i) => (
           <EvaluationCard
-            key={item.menuId}
+            key={item.id}
             item={item}
             handlePress={(id) => handlePress(id)}
             selectedId={selectedId}
