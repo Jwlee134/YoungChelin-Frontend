@@ -106,6 +106,7 @@ export default function LoginModal({
               message: "존재하지 않는 이메일입니다.",
             });
           });
+        break;
     }
   }
 
@@ -119,7 +120,7 @@ export default function LoginModal({
 
   let bodyContent = (
     <>
-      <form className="space-y-3">
+      <form className="space-y-3" onSubmit={handleSubmit(onValid)}>
         <Input
           {...register("username", { required: true })}
           autoFocus
@@ -132,12 +133,7 @@ export default function LoginModal({
           label="비밀번호"
           variant="bordered"
         />
-        <Button
-          type="submit"
-          className="w-full"
-          onClick={handleSubmit(onValid)}
-          isLoading={isLoggingIn}
-        >
+        <Button type="submit" className="w-full" isLoading={isLoggingIn}>
           {texts[mode][1]}
         </Button>
         {errors.apiError?.message && (
@@ -206,14 +202,9 @@ export default function LoginModal({
 
   if (mode === Mode.FIND_PW) {
     bodyContent = (
-      <form className="space-y-3 mb-6">
+      <form className="space-y-3 mb-6" onSubmit={handleSubmit(onValid)}>
         <EmailInputs register={register} errors={errors} />
-        <Button
-          type="submit"
-          className="w-full"
-          onClick={handleSubmit(onValid)}
-          isLoading={isFindingPw}
-        >
+        <Button type="submit" className="w-full" isLoading={isFindingPw}>
           {texts[mode][1]}
         </Button>
         {errors.apiError?.message && (
@@ -236,14 +227,9 @@ export default function LoginModal({
 
   if (mode === Mode.FIND_ID) {
     bodyContent = (
-      <form className="space-y-3 mb-6">
+      <form className="space-y-3 mb-6" onSubmit={handleSubmit(onValid)}>
         <EmailInputs register={register} errors={errors} />
-        <Button
-          type="submit"
-          className="w-full"
-          onClick={handleSubmit(onValid)}
-          isLoading={isFindingId}
-        >
+        <Button type="submit" className="w-full" isLoading={isFindingId}>
           {texts[mode][1]}
         </Button>
         {errors.apiError?.message && (

@@ -47,6 +47,7 @@ export const userApi = api.injectEndpoints({
         url: "/login/find-id",
         method: "POST",
         body,
+        responseHandler: "text",
       }),
     }),
 

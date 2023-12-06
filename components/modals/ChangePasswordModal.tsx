@@ -2,6 +2,7 @@ import { Button, Input } from "@nextui-org/react";
 import Modal from "./Modal";
 import { useForm } from "react-hook-form";
 import { userApi } from "@/libs/redux/api/userApi";
+import { useEffect } from "react";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ export default function ChangePasswordModal({
     handleSubmit,
     formState: { errors },
     setError,
+    reset,
   } = useForm<Form>();
   const [trigger, { isLoading }] = userApi.useChangePasswordMutation();
 
@@ -44,6 +46,12 @@ export default function ChangePasswordModal({
       : errors.confirmNewPw?.message?.includes("일치")
       ? errors.confirmNewPw.message
       : "";
+
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [isOpen, reset]);
 
   return (
     <Modal
