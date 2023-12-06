@@ -16,12 +16,11 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
         fullWidth ? "" : "max-w-[156px]"
       )}
     >
-      {Object.keys(data).map((evaluatedKey, i) => {
+      {Object.keys(data).map((evaluatedKey) => {
         const keyWithData = evaluationItems[evaluatedKey as EvaluationItems];
-        const v = Object.values(data)?.[i] as string;
         if (evaluatedKey === EvaluationItems.MOOD) {
-          return data?.[evaluatedKey]
-            ?.map((mood) => {
+          return data[evaluatedKey]
+            .map((mood) => {
               return (
                 <Tooltip
                   key={mood}
@@ -38,8 +37,9 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
             })
             .flat();
         }
-        const item = keyWithData.data[v];
-        if (item) {
+        const value = data[evaluatedKey] as string;
+        const item = keyWithData.data[value];
+        if (item)
           return (
             <Tooltip
               key={evaluatedKey}
@@ -53,7 +53,6 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
               />
             </Tooltip>
           );
-        }
         return null;
       })}
     </div>

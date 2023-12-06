@@ -31,7 +31,7 @@ export default function EvaluationHistoryPage() {
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         {data?.map((item, i) => (
           <EvaluationCard
-            key={item.menuId}
+            key={item.id}
             item={item}
             ref={i === data.length - 1 ? ref : undefined}
             hasLink
