@@ -9,7 +9,7 @@ export default function EvaluationHistoryPage() {
   useLoginRequired();
 
   const [id, setId] = useState(0);
-  const { data } = userApi.useGetEvaluationHistoryQuery({ id });
+  const { data, error } = userApi.useGetEvaluationHistoryQuery({ id });
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,6 +40,11 @@ export default function EvaluationHistoryPage() {
             hasLink
           />
         ))}
+        {error &&
+          "data" in error &&
+          (error.data as string).includes("value") && (
+            <div className="text-black/50">평가 내역이 존재하지 않습니다.</div>
+          )}
       </div>
     </div>
   );

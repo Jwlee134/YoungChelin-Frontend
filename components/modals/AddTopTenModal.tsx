@@ -22,7 +22,7 @@ export default function AddTopTenModal({
   const [selectedId, setSelectedId] = useState("");
   const [trigger, { isLoading, error }] = userApi.usePostTopTenMutation();
   const [id, setId] = useState(0);
-  const { data } = userApi.useGetEvaluationHistoryQuery(
+  const { data, error: evaluationError } = userApi.useGetEvaluationHistoryQuery(
     { id },
     { skip: !isOpen }
   );
@@ -102,6 +102,11 @@ export default function AddTopTenModal({
             ref={i === data.length - 1 ? ref : undefined}
           />
         ))}
+        {evaluationError &&
+          "data" in evaluationError &&
+          (evaluationError.data as string).includes("value") && (
+            <div className="text-black/50">평가 내역이 존재하지 않습니다.</div>
+          )}
       </div>
     </Modal>
   );
