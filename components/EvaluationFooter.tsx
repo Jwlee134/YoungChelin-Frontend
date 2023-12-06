@@ -1,5 +1,6 @@
 "use client";
 
+import useLoginRequired from "@/hooks/useLoginRequired";
 import { evaluateApi } from "@/libs/redux/api/evaluateApi";
 import {
   EvaluationSteps,
@@ -12,6 +13,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { shallowEqual } from "react-redux";
 
 export default function EvaluationFooter() {
+  useLoginRequired();
+
   const router = useRouter();
   const pathname = usePathname();
   const { restaurant, items, totalLength, cursor, isPhotoStep } = useSelector(

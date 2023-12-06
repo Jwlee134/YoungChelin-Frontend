@@ -1,10 +1,13 @@
 "use client";
 
 import EvaluationCard from "@/components/EvaluationCard";
+import useLoginRequired from "@/hooks/useLoginRequired";
 import { userApi } from "@/libs/redux/api/userApi";
 import { useEffect, useRef, useState } from "react";
 
 export default function EvaluationHistoryPage() {
+  useLoginRequired();
+
   const [id, setId] = useState(0);
   const { data } = userApi.useGetEvaluationHistoryQuery({ id });
   const ref = useRef<HTMLDivElement>(null);

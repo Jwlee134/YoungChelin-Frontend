@@ -3,6 +3,8 @@
 import Carousel from "@/components/Carousel";
 import { userApi } from "@/libs/redux/api/userApi";
 import { Spinner } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const table: { [key: string]: string } = {
   recommend: "개인 추천 맛식",
@@ -11,7 +13,14 @@ const table: { [key: string]: string } = {
 };
 
 export default function RecommendationsPage() {
-  const { data, isLoading } = userApi.useGetRecommendsQuery();
+  const { data, isLoading, isError } = userApi.useGetRecommendsQuery();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isError) return;
+    alert("평가 횟수가 5번 이상이어야 추천을 받을 수 있습니다.");
+    router.back();
+  }, [isError, router]);
 
   return (
     <div className="px-6 py-12">

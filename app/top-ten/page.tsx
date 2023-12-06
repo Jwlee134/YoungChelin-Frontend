@@ -2,6 +2,7 @@
 
 import ResultDtoMapper from "@/components/ResultDtoMapper";
 import AddTopTenModal from "@/components/modals/AddTopTenModal";
+import useLoginRequired from "@/hooks/useLoginRequired";
 import { userApi } from "@/libs/redux/api/userApi";
 import {
   Button,
@@ -16,6 +17,8 @@ import { Fragment, useState } from "react";
 import { HiOutlineTrash } from "react-icons/hi2";
 
 export default function TopTen() {
+  useLoginRequired();
+
   const [isEdit, setIsEdit] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();

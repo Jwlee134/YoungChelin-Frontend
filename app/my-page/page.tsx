@@ -4,11 +4,14 @@ import MyPageCard from "@/components/MyPageCard";
 import ChangePasswordModal from "@/components/modals/ChangePasswordModal";
 import EditProfilePictureModal from "@/components/modals/EditProfilePictureModal";
 import QuitModal from "@/components/modals/QuitModal";
+import useLoginRequired from "@/hooks/useLoginRequired";
 import { userApi } from "@/libs/redux/api/userApi";
 import { Avatar, useDisclosure } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
 export default function MyPage() {
+  useLoginRequired();
+
   const {
     isOpen: isEditProfilePictureOpen,
     onOpen: onEditProfilePictureOpen,
