@@ -15,6 +15,7 @@ export default function EmailInputs<T>({ register, errors }: Props) {
         autoFocus
         label="이메일"
         variant="bordered"
+        isInvalid={!!errors.email}
       />
       <span className="mx-2 text-gray-400">@</span>
       <Select
@@ -22,6 +23,7 @@ export default function EmailInputs<T>({ register, errors }: Props) {
         variant="bordered"
         label="주소 선택"
         className="w-52"
+        isInvalid={!!errors.emailAddress}
       >
         {["yu.ac.kr", "ynu.kr"].map((addr) => (
           <SelectItem key={addr} value={addr}>

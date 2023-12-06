@@ -1,10 +1,12 @@
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Modal from "./Modal";
 import { userApi } from "@/libs/redux/api/userApi";
 import EmailInputs from "../EmailInputs";
 import ErrorMessage from "../ErrorMessage";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { SerializedError } from "@reduxjs/toolkit";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -17,7 +19,6 @@ export interface LoginForm {
   email: string;
   emailAddress: string;
   password: string;
-  apiError: string;
 }
 
 enum Mode {
@@ -50,9 +51,7 @@ export default function LoginModal({
     register,
     handleSubmit,
     formState: { errors },
-    setError,
     reset,
-    clearErrors,
   } = useForm<LoginForm>();
   const [login, { isLoading: isLoggingIn }] = userApi.useLoginMutation();
   const [sendEmail, { isLoading: isSendingEmail }] =
@@ -60,6 +59,15 @@ export default function LoginModal({
   const [findId, { isLoading: isFindingId }] = userApi.useFindIdMutation();
   const [findPw, { isLoading: isFindingPw }] = userApi.useFindPwMutation();
   const [foundUsername, setFoundUsername] = useState("");
+  const [apiErrorMsg, setApiErrorMsg] = useState("");
+
+  function handleError(
+    err: FetchBaseQueryError | SerializedError,
+    status: number,
+    msg: string
+  ) {
+    if ("status" in err && err.status === status) setApiErrorMsg(msg);
+  }
 
   function onValid({ email, emailAddress, password, username }: LoginForm) {
     const combinedEmail = `${email}@${emailAddress}`;
@@ -69,18 +77,17 @@ export default function LoginModal({
         login({ userName: username, password })
           .unwrap()
           .then(onClose)
-          .catch(() => {
-            setError("apiError", {
-              message: "아이디 또는 비밀번호가 일치하지 않습니다.",
-            });
-          });
+          .catch((err) =>
+            handleError(err, 400, "아이디 또는 비밀번호가 일치하지 않습니다.")
+          );
         break;
       case Mode.SIGN_UP:
         sendEmail({ email: combinedEmail })
           .unwrap()
           .then(() => {
             setMode(Mode.AFTER_SIGN_UP);
-          });
+          })
+          .catch((err) => handleError(err, 400, "이미 존재하는 이메일입니다."));
         break;
       case Mode.FIND_PW:
         findPw({ email: combinedEmail })
@@ -88,11 +95,7 @@ export default function LoginModal({
           .then(() => {
             setMode(Mode.AFTER_FIND_PW);
           })
-          .catch(() => {
-            setError("apiError", {
-              message: "존재하지 않는 이메일입니다.",
-            });
-          });
+          .catch((err) => handleError(err, 400, "존재하지 않는 이메일입니다."));
         break;
       case Mode.FIND_ID:
         findId({ email: combinedEmail })
@@ -101,11 +104,7 @@ export default function LoginModal({
             setFoundUsername(username);
             setMode(Mode.AFTER_FIND_ID);
           })
-          .catch(() => {
-            setError("apiError", {
-              message: "존재하지 않는 이메일입니다.",
-            });
-          });
+          .catch((err) => handleError(err, 400, "존재하지 않는 이메일입니다."));
         break;
     }
   }
@@ -114,6 +113,7 @@ export default function LoginModal({
     return () => {
       setMode(Mode.LOGIN);
       setFoundUsername("");
+      setApiErrorMsg("");
       reset();
     };
   }, [isOpen, reset]);
@@ -126,19 +126,19 @@ export default function LoginModal({
           autoFocus
           label="아이디"
           variant="bordered"
+          isInvalid={!!errors.username}
         />
         <Input
           {...register("password", { required: true })}
           type="password"
           label="비밀번호"
           variant="bordered"
+          isInvalid={!!errors.password}
         />
         <Button type="submit" className="w-full" isLoading={isLoggingIn}>
           {texts[mode][1]}
         </Button>
-        {errors.apiError?.message && (
-          <ErrorMessage text={errors.apiError.message} />
-        )}
+        {apiErrorMsg && <ErrorMessage text={apiErrorMsg} />}
       </form>
       <div className="py-2 flex justify-end items-center text-sm text-gray-500 gap-6">
         <div className="cursor-pointer" onClick={() => setMode(Mode.SIGN_UP)}>
@@ -147,7 +147,7 @@ export default function LoginModal({
         <div
           className="cursor-pointer"
           onClick={() => {
-            clearErrors("apiError");
+            setApiErrorMsg("");
             setMode(Mode.FIND_ID);
           }}
         >
@@ -156,7 +156,7 @@ export default function LoginModal({
         <div
           className="cursor-pointer"
           onClick={() => {
-            clearErrors("apiError");
+            setApiErrorMsg("");
             setMode(Mode.FIND_PW);
           }}
         >
@@ -174,6 +174,7 @@ export default function LoginModal({
           <Button type="submit" className="w-full" isLoading={isSendingEmail}>
             {texts[mode][1]}
           </Button>
+          {apiErrorMsg && <ErrorMessage text={apiErrorMsg} />}
         </form>
         <div className="py-2 flex justify-end items-center text-sm text-gray-500 gap-6">
           <div className="cursor-pointer" onClick={() => setMode(Mode.LOGIN)}>
@@ -202,9 +203,7 @@ export default function LoginModal({
         <Button type="submit" className="w-full" isLoading={isFindingPw}>
           {texts[mode][1]}
         </Button>
-        {errors.apiError?.message && (
-          <ErrorMessage text={errors.apiError.message} />
-        )}
+        {apiErrorMsg && <ErrorMessage text={apiErrorMsg} />}
       </form>
     );
   }
@@ -227,9 +226,7 @@ export default function LoginModal({
         <Button type="submit" className="w-full" isLoading={isFindingId}>
           {texts[mode][1]}
         </Button>
-        {errors.apiError?.message && (
-          <ErrorMessage text={errors.apiError.message} />
-        )}
+        {apiErrorMsg && <ErrorMessage text={apiErrorMsg} />}
       </form>
     );
   }

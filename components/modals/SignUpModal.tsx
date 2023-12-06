@@ -3,13 +3,13 @@ import Modal from "./Modal";
 import { userApi } from "@/libs/redux/api/userApi";
 import { useForm } from "react-hook-form";
 import { Button, Input, Spinner } from "@nextui-org/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import ErrorMessage from "../ErrorMessage";
 
 interface SignUpForm {
   username: string;
   password: string;
   passwordConfirm: string;
-  error: string;
 }
 
 interface SignUpModalProps {
@@ -26,21 +26,19 @@ export default function SignUpModal({
   const email = useSearchParams().get("email");
   const [verify, { isLoading: isVerifying, isSuccess }] =
     userApi.useVerifyEmailMutation();
-  const [signUp, { isLoading }] = userApi.useRegisterMutation();
+  const [signUp, { isLoading, error }] = userApi.useRegisterMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
     reset,
   } = useForm<SignUpForm>();
   const router = useRouter();
+  const [customErrorMsg, setCustomErrorMsg] = useState("");
 
   function onValid({ username, password, passwordConfirm }: SignUpForm) {
     if (password !== passwordConfirm) {
-      setError("error", {
-        message: "비밀번호가 일치하지 않습니다.",
-      });
+      setCustomErrorMsg("비밀번호가 일치하지 않습니다.");
       return;
     }
     signUp({ email: email!, userName: username, password })
@@ -48,15 +46,23 @@ export default function SignUpModal({
       .then(() => {
         reset();
         router.replace("/");
-      })
-      .catch((err) => {
-        console.log(err);
       });
   }
 
   useEffect(() => {
     if (isOpen) verify({ email: email! });
   }, [isOpen, verify, email]);
+
+  useEffect(() => {
+    if (!error) return;
+    if ("status" in error) {
+      setCustomErrorMsg(
+        error.status === 409
+          ? "이미 존재하는 아이디입니다."
+          : "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다."
+      );
+    }
+  }, [error]);
 
   return (
     <Modal
@@ -102,11 +108,7 @@ export default function SignUpModal({
           <Button type="submit" className="w-full" isLoading={isLoading}>
             회원가입
           </Button>
-          {errors.error?.message && (
-            <div className="mt-3 text-sm text-red-500">
-              {errors.error?.message}
-            </div>
-          )}
+          {customErrorMsg && <ErrorMessage text={customErrorMsg} />}
         </form>
       ) : (
         <div>이메일 인증이 실패하였습니다. 다시 시도해 주세요.</div>
