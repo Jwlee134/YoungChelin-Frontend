@@ -25,12 +25,12 @@ export default function MyPage() {
     onOpenChange: onQuitOpenChange,
   } = useDisclosure();
   const router = useRouter();
-  const { data } = userApi.useGetMeQuery();
+  const { data, isError } = userApi.useGetMeQuery();
 
   return (
     <div className="pt-20 px-6">
       <div className="flex items-center">
-        <Avatar className="w-40 h-40" src={data?.url} />
+        <Avatar className="w-40 h-40" src={isError ? "" : data?.url} />
         <div className="pl-10 text-4xl">
           안녕하세요,
           <br />

@@ -64,6 +64,7 @@ export default function ChangePasswordModal({
       <Input
         {...register("currentPw", { required: true })}
         variant="bordered"
+        type="password"
         label="현재 비밀번호"
         isInvalid={errors.currentPw?.type === "required"}
         /* 또는 현재 비밀번호 불일치시 setError에서 설정한 type */
@@ -71,12 +72,14 @@ export default function ChangePasswordModal({
       <Input
         {...register("newPw", { required: true })}
         variant="bordered"
+        type="password"
         label="새 비밀번호"
         isInvalid={errors.newPw?.type === "required"}
       />
       <Input
         {...register("confirmNewPw", { required: true })}
         variant="bordered"
+        type="password"
         label="새 비밀번호 확인"
         errorMessage={errorMessage}
         isInvalid={
