@@ -14,20 +14,16 @@ export default function DishPage() {
       <Image
         src={data?.url}
         alt="메뉴 사진"
+        width="100%"
         className="aspect-[4/3] object-cover"
         radius="none"
       />
       <div className="flex justify-between items-center py-4 px-4 md:px-0">
-        {data?.resultDto && <ResultDtoMapper data={data.resultDto} />}
+        {data?.resultDto && <ResultDtoMapper fullWidth data={data.resultDto} />}
       </div>
-      {data?.statistics.map((statistic, i) => (
+      {data?.statistic.map((statistic, i) => (
         <div key={i}>
-          <Image
-            src={statistic.url}
-            className="w-full"
-            alt="통계"
-            radius="none"
-          />
+          <Image src={statistic.url} alt="통계" width="100%" radius="none" />
         </div>
       ))}
     </div>

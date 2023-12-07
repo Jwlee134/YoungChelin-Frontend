@@ -89,7 +89,7 @@ interface DetailDto {
   restaurantId: string;
   resultDto: ResultDto;
   url: string;
-  statistics: Statistics[];
+  statistic: Statistics[];
 }
 
 interface ProfileDto {
