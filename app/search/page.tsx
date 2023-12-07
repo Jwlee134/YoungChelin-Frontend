@@ -89,6 +89,10 @@ export default function Search() {
     });
   }
 
+  useEffect(() => {
+    setParsed(queryString.parse(searchParams.toString()));
+  }, [searchParams]);
+
   return (
     <div className="pt-12 px-6">
       <div className="flex justify-between items-center">
