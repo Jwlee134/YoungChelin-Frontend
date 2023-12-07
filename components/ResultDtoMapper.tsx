@@ -6,14 +6,20 @@ import { Image, Tooltip } from "@nextui-org/react";
 interface Props {
   data: ResultDto;
   fullWidth?: boolean;
+  size?: "md" | "lg";
 }
 
-export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
+export default function ResultDtoMapper({
+  data,
+  fullWidth = false,
+  size = "md",
+}: Props) {
   return (
     <div
       className={cls(
-        "flex gap-1 items-center flex-wrap",
-        fullWidth ? "" : "max-w-[156px]"
+        "flex items-center flex-wrap",
+        fullWidth ? "" : "max-w-[156px]",
+        size === "md" ? "gap-1" : "gap-2"
       )}
     >
       {Object.keys(data).map((evaluatedKey) => {
@@ -30,7 +36,9 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
                   <Image
                     src={keyWithData.data[mood].src}
                     alt={keyWithData.data[mood].description}
-                    className="max-w-[28px]"
+                    className={cls(
+                      size === "md" ? "max-w-[28px]" : "max-w-[34px]"
+                    )}
                   />
                 </Tooltip>
               );
@@ -49,7 +57,7 @@ export default function ResultDtoMapper({ data, fullWidth = false }: Props) {
               <Image
                 src={item.src}
                 alt={item.description}
-                className="max-w-[28px]"
+                className={cls(size === "md" ? "max-w-[28px]" : "max-w-[34px]")}
               />
             </Tooltip>
           );
