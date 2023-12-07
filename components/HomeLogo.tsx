@@ -16,7 +16,7 @@ export default function HomeLogo() {
       ([e]) => {
         dispatch(globalActions.setIsHomeLogoIntersecting(e.isIntersecting));
       },
-      { rootMargin: "20px 0px 0px 0px" }
+      { rootMargin: "28px 0px 0px 0px" }
     );
     if (ref.current) {
       observer.observe(ref.current);

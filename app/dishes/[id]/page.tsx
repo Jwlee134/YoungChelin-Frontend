@@ -35,7 +35,7 @@ export default function DishPage() {
               {i === 0
                 ? `이 맛식은 평균 ${statistic.avg}점의 맛 평가를 받았습니다.`
                 : i === 1
-                ? `이 맛식은 지금까지 평가된 음식 중 상위 ${statistic.avg}퍼센트의 맛을 가졌습니다.`
+                ? `이 맛식은 지금까지 평가된 맛식들 중 상위 ${statistic.avg}퍼센트의 맛을 가졌습니다.`
                 : ""}
             </h1>
             <Image src={statistic.url} alt="통계" width="100%" radius="none" />
