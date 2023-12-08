@@ -122,14 +122,14 @@ export default function LoginModal({
     <>
       <form className="space-y-3" onSubmit={handleSubmit(onValid)}>
         <Input
-          {...register("username", { required: true })}
+          {...register("username", { required: mode === Mode.LOGIN })}
           autoFocus
           label="아이디"
           variant="bordered"
           isInvalid={!!errors.username}
         />
         <Input
-          {...register("password", { required: true })}
+          {...register("password", { required: mode === Mode.LOGIN })}
           type="password"
           label="비밀번호"
           variant="bordered"
