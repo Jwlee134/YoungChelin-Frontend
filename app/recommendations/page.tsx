@@ -1,6 +1,7 @@
 "use client";
 
 import Carousel from "@/components/Carousel";
+import useLoginRequired from "@/hooks/useLoginRequired";
 import { userApi } from "@/libs/redux/api/userApi";
 import { Spinner } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ const table: { [key: string]: string } = {
 };
 
 export default function RecommendationsPage() {
+  useLoginRequired();
   const { data, isLoading, isError } = userApi.useGetRecommendsQuery();
   const router = useRouter();
 
