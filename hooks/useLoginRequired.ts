@@ -9,6 +9,6 @@ export default function useLoginRequired() {
   useEffect(() => {
     if (!isError) return;
     alert("로그인이 필요한 서비스입니다.");
-    router.back();
+    router.push("/");
   }, [isError, router]);
 }
