@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import { useEffect, useRef, useState } from "react";
 import { userApi } from "@/libs/redux/api/userApi";
 import EvaluationCard from "../EvaluationCard";
+import useInView from "@/hooks/useInView";
 
 interface AddTopTenModalProps {
   isOpen: boolean;
@@ -26,23 +27,12 @@ export default function AddTopTenModal({
     { id },
     { skip: !isOpen }
   );
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!data || !ref.current) return;
-    let observerRefValue: HTMLDivElement | null = null;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !data[data.length - 1].last)
+  const { ref } = useInView({
+    callback(inInView) {
+      if (inInView && data && !data[data.length - 1].last)
         setId(parseInt(data[data.length - 1].id));
-    });
-    observer.observe(ref.current);
-    observerRefValue = ref.current;
-
-    return () => {
-      if (observerRefValue) observer.unobserve(observerRefValue);
-    };
-  }, [data]);
+    },
+  });
 
   async function handleClick() {
     if (!topTen || selectedIdx === null) return;

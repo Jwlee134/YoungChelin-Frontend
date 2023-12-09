@@ -1,32 +1,21 @@
 "use client";
 
 import EvaluationCard from "@/components/EvaluationCard";
+import useInView from "@/hooks/useInView";
 import useLoginRequired from "@/hooks/useLoginRequired";
 import { userApi } from "@/libs/redux/api/userApi";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 export default function EvaluationHistoryPage() {
   useLoginRequired();
-
   const [id, setId] = useState(0);
   const { data, error } = userApi.useGetEvaluationHistoryQuery({ id });
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!data || !ref.current) return;
-    let observerRefValue: HTMLDivElement | null = null;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !data[data.length - 1].last)
+  const { ref } = useInView({
+    callback(inInView) {
+      if (inInView && data && !data[data.length - 1].last)
         setId(parseInt(data[data.length - 1].id));
-    });
-    observer.observe(ref.current);
-    observerRefValue = ref.current;
-
-    return () => {
-      if (observerRefValue) observer.unobserve(observerRefValue);
-    };
-  }, [data]);
+    },
+  });
 
   return (
     <div className="py-12 px-6">

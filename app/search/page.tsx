@@ -1,6 +1,7 @@
 "use client";
 
 import HomeCard from "@/components/HomeCard";
+import useInView from "@/hooks/useInView";
 import { evaluationItems } from "@/libs/constants";
 import { homeApi } from "@/libs/redux/api/homeApi";
 import {
@@ -37,24 +38,12 @@ export default function Search() {
       { skip: !isFilterMode }
     );
   const data = isFilterMode ? filteredData : keywordData;
-
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!data || !ref.current) return;
-    let observerRefValue: HTMLDivElement | null = null;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !data[data.length - 1].last)
+  const { ref } = useInView({
+    callback(inInView) {
+      if (inInView && data && !data[data.length - 1].last)
         setId(parseInt(data[data.length - 1].id));
-    });
-    observer.observe(ref.current);
-    observerRefValue = ref.current;
-
-    return () => {
-      if (observerRefValue) observer.unobserve(observerRefValue);
-    };
-  }, [data]);
+    },
+  });
 
   function handleMenuClick(key: Key, i: number) {
     const label = Object.keys(evaluationItems)[i];
