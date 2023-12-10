@@ -3,7 +3,7 @@
 import ResultDtoMapper from "@/components/ResultDtoMapper";
 import AddTopTenModal from "@/components/modals/AddTopTenModal";
 import useLoginRequired from "@/hooks/useLoginRequired";
-import { userApi } from "@/libs/redux/api/userApi";
+import { topTenAdapter, userApi } from "@/libs/redux/api/userApi";
 import {
   Button,
   Card,
@@ -20,19 +20,19 @@ export default function TopTen() {
   useLoginRequired();
 
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [selectedRank, setSelectedRank] = useState<number | null>(null);
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const { data } = userApi.useGetTopTenQuery();
   const [trigger] = userApi.useDeleteTopTenMutation();
 
   function handleClick(i: number) {
-    setSelectedIdx(i);
+    setSelectedRank(i);
     onOpen();
   }
 
   function handleDelete(rank: string) {
     if (!data) return;
-    const item = data.find((item) => item.rank === rank);
+    const item = topTenAdapter.getSelectors().selectById(data, rank);
     if (item) trigger(item);
   }
 
@@ -50,18 +50,17 @@ export default function TopTen() {
       </div>
       <div className="grid grid-cols-2 gap-4">
         {Array.from({ length: 10 }, (v, i) => {
-          const idx = data?.findIndex((item) => item.rank === i + 1 + "");
           return (
             <Fragment key={i}>
-              {idx !== undefined && idx !== -1 ? (
+              {data?.entities[i + 1] ? (
                 <Card
                   className="aspect-square"
                   as={Link}
-                  href={`/dishes/${data?.[idx].menuId}`}
+                  href={`/dishes/${data.entities[i + 1]!.menuId}`}
                 >
                   <CardBody className="p-0 grow-0">
                     <Image
-                      src={data?.[idx].url}
+                      src={data.entities[i + 1]!.url}
                       alt="썸네일"
                       radius="none"
                       width="100%"
@@ -70,9 +69,11 @@ export default function TopTen() {
                   </CardBody>
                   <CardFooter className="flex justify-between items-start">
                     <div className="font-bold text-lg text-ellipsis whitespace-nowrap overflow-hidden">
-                      {data?.[idx].menuName}
+                      {data.entities[i + 1]!.menuName}
                     </div>
-                    {data && <ResultDtoMapper data={data?.[idx].evaluate} />}
+                    {data && (
+                      <ResultDtoMapper data={data.entities[i + 1]!.evaluate} />
+                    )}
                   </CardFooter>
                   {isEdit && (
                     <Button
@@ -91,7 +92,7 @@ export default function TopTen() {
               ) : (
                 <div
                   className="border border-dashed border-gray-400 rounded-xl aspect-square flex justify-center items-center cursor-pointer"
-                  onClick={() => handleClick(i)}
+                  onClick={() => handleClick(i + 1)}
                 >
                   <span className="text-5xl text-gray-300">{i + 1}</span>
                 </div>
@@ -104,8 +105,7 @@ export default function TopTen() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         onClose={onClose}
-        selectedIdx={selectedIdx}
-        topTen={data}
+        selectedRank={selectedRank}
       />
     </div>
   );

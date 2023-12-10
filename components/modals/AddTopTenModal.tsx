@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react";
 import Modal from "./Modal";
-import { useEffect, useRef, useState } from "react";
-import { userApi } from "@/libs/redux/api/userApi";
+import { useEffect, useState } from "react";
+import { evaluationHistoryAdapter, userApi } from "@/libs/redux/api/userApi";
 import EvaluationCard from "../EvaluationCard";
 import useInView from "@/hooks/useInView";
 
@@ -9,17 +9,16 @@ interface AddTopTenModalProps {
   isOpen: boolean;
   onOpenChange: () => void;
   onClose: () => void;
-  selectedIdx: number | null;
-  topTen: TopTenDto[] | undefined;
+  selectedRank: number | null;
 }
 
 export default function AddTopTenModal({
   isOpen,
   onOpenChange,
   onClose,
-  selectedIdx,
-  topTen,
+  selectedRank,
 }: AddTopTenModalProps) {
+  const { data: topTen } = userApi.useGetTopTenQuery();
   const [selectedId, setSelectedId] = useState("");
   const [trigger, { isLoading, error }] = userApi.usePostTopTenMutation();
   const [id, setId] = useState(0);
@@ -27,25 +26,33 @@ export default function AddTopTenModal({
     { id },
     { skip: !isOpen }
   );
+  const selectedData = data
+    ? evaluationHistoryAdapter.getSelectors().selectAll(data)
+    : [];
   const { ref } = useInView({
     callback(inInView) {
-      if (inInView && data && !data[data.length - 1].last)
-        setId(parseInt(data[data.length - 1].id));
+      if (
+        inInView &&
+        selectedData &&
+        !selectedData[selectedData.length - 1].last
+      )
+        setId(parseInt(selectedData[selectedData.length - 1].id));
     },
   });
 
   async function handleClick() {
-    if (!topTen || selectedIdx === null) return;
-    const item = data?.find((item) => item.id === selectedId)!;
+    const item = data?.entities[selectedId];
+    if (!topTen?.entities || selectedRank === null || !item) return;
+    const topTens = Object.values(topTen.entities) as TopTenDto[];
     trigger([
-      ...topTen,
+      ...topTens,
       {
         evaluate: item?.evaluate,
         menuId: item.menuId,
         menuName: item.menuName,
         restaurantId: item.restaurantId,
         url: item.url,
-        rank: selectedIdx + 1 + "",
+        rank: selectedRank + "",
       },
     ]);
     onClose();
@@ -73,7 +80,7 @@ export default function AddTopTenModal({
       onOpenChange={onOpenChange}
       onClose={onClose}
       headerContent={`${
-        selectedIdx !== null ? `Top ${selectedIdx + 1} ` : ""
+        selectedRank !== null ? `Top ${selectedRank} ` : ""
       }맛식 추가`}
       footerContent={
         <Button color="primary" onClick={handleClick} isLoading={isLoading}>
@@ -83,13 +90,13 @@ export default function AddTopTenModal({
       size="xl"
     >
       <div className="max-h-[50vh] overflow-y-auto space-y-3 p-3">
-        {data?.map((item, i) => (
+        {selectedData?.map((item, i) => (
           <EvaluationCard
             key={item.id}
             item={item}
             handlePress={(id) => handlePress(id)}
             selectedId={selectedId}
-            ref={i === data.length - 1 ? ref : undefined}
+            ref={i === selectedData.length - 1 ? ref : undefined}
           />
         ))}
         {evaluationError &&
